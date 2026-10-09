@@ -1,0 +1,99 @@
+<!-- Hero Section -->
+<section class="position-relative text-white d-flex align-items-center justify-content-center min-vh-100 overflow-hidden"
+         style="background: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), url('/images/laboratorio.jpg') center/cover no-repeat;">
+    <div class="container text-center py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-3">Gestiona tus Reservas de Espacios</h1>
+                <p class="lead mb-4 text-light">
+                    Reserva de laboratorios y equipamiento para los docentes de forma rápida y organizada.
+                </p>
+                <a href="#espacios" class="btn btn-info btn-lg px-4 gap-3 shadow rounded-pill fw-semibold">
+                    <i class="bi bi-calendar-check me-2"></i>Ver Espacios
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Espacios Section -->
+<section id="espacios" class="container py-5 my-4">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold display-6">Espacios Disponibles</h2>
+        <p class="text-muted">Conoce las características de cada laboratorio antes de confirmar tu reserva</p>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        <!-- Card 1: Ciclo Básico -->
+        <div class="col">
+            <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden card-hover">
+                <div class="position-relative">
+                    <img src="/images/lab_ciclo_basico.jpg" class="card-img-top" alt="Laboratorio Ciclo Básico"
+                         style="height: 240px; object-fit: cover;">
+                    <span class="badge bg-secondary position-absolute top-0 end-0 m-3 px-3 py-2 rounded-pill shadow-sm">
+                        Ciclo Básico
+                    </span>
+                </div>
+                <div class="card-body p-4 d-flex flex-column">
+                    <h3 class="card-title h4 fw-bold mb-3">Laboratorio Ciclo Básico</h3>
+                    <p class="card-text text-secondary mb-4">
+                        Equipado con mesones y sillas para el alumnado. Se requiere solicitar en pañol las computadoras y televisores adicionales.
+                    </p>
+                    
+                    <ul class="list-unstyled mt-auto mb-4">
+                        <li class="d-flex align-items-center mb-2 text-secondary">
+                            <span class="badge bg-light text-success me-2 rounded-circle p-2">✓</span>
+                            <span><strong>Capacidad:</strong> 32 estudiantes</span>
+                        </li>
+                        <li class="d-flex align-items-center text-muted small">
+                            <span class="badge bg-light text-warning me-2 rounded-circle p-2">!</span>
+                            <span>Recursos multimedia a solicitar en pañol</span>
+                        </li>
+                    </ul>
+
+                    <div class="pt-3 border-top">
+                        <a routerLink="/login" class="btn btn-primary w-100 rounded-pill fw-semibold shadow-sm">Solicitar Reserva</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2: Ciclo Orientado -->
+        <div class="col">
+            <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden card-hover">
+                <div class="position-relative">
+                    <img src="/images/lab_ciclo_orientado.jpg" class="card-img-top" alt="Laboratorio Ciclo Orientado"
+                         style="height: 240px; object-fit: cover;">
+                    <span class="badge bg-primary position-absolute top-0 end-0 m-3 px-3 py-2 rounded-pill shadow-sm">
+                        Ciclo Orientado
+                    </span>
+                </div>
+                <div class="card-body p-4 d-flex flex-column">
+                    <h3 class="card-title h4 fw-bold mb-3">Laboratorio Ciclo Orientado</h3>
+                    <p class="card-text text-secondary mb-4">
+                        Espacio equipado con netbooks individuales por estudiante. Cuenta con televisor y proyector integrados. No requiere solicitar recursos extra.
+                    </p>
+                    
+                    <ul class="list-unstyled mt-auto mb-4">
+                        <li class="d-flex align-items-center mb-2 text-secondary">
+                            <span class="badge bg-light text-success me-2 rounded-circle p-2">✓</span>
+                            <span><strong>Capacidad:</strong> 32 estudiantes</span>
+                        </li>
+                        <li class="d-flex align-items-center mb-2 text-secondary">
+                            <span class="badge bg-light text-success me-2 rounded-circle p-2">✓</span>
+                            <span>Netbooks individuales con cargadores</span>
+                        </li>
+                        <li class="d-flex align-items-center text-secondary">
+                            <span class="badge bg-light text-success me-2 rounded-circle p-2">✓</span>
+                            <span>Televisor y proyector integrados</span>
+                        </li>
+                    </ul>
+
+                    <div class="pt-3 border-top">
+                        <a routerLink="/login" class="btn btn-primary w-100 rounded-pill fw-semibold shadow-sm">Solicitar Reserva</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

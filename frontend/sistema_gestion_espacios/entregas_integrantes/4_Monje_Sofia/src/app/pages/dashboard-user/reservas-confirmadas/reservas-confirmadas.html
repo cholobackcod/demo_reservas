@@ -1,0 +1,51 @@
+<div class="section-header mb-4">
+  <h2>Reservas confirmadas</h2>
+  <p class="text-muted">
+    Consultá y administrá tus reservas actuales.
+  </p>
+</div>
+
+@if (loading) {
+  <div class="text-center py-4">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+} @else {
+  <div class="table-responsive">
+    <table class="table table-striped table-hover align-middle">
+      <thead>
+        <tr>
+          <th>Laboratorio</th>
+          <th>Fecha desde</th>
+          <th>Fecha hasta</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (reserva of reservas; track reserva.id) {
+          <tr>
+            <td><strong>{{ reserva.salaNombre }}</strong></td>
+            <td>{{ reserva.inicio }}</td>
+            <td>{{ reserva.fin }}</td>
+            <td>
+              <div class="d-flex gap-2">
+                <button
+                  type="button"
+                  class="btn btn-danger btn-sm"
+                  (click)="cancelarReserva(reserva.id)"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="4" class="text-center text-muted">No tenés reservas confirmadas actualmente.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

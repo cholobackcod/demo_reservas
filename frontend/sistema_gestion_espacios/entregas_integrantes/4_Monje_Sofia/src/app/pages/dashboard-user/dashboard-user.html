@@ -1,0 +1,88 @@
+<main class="bg-secondary-subtle py-5">
+
+  <div class="container">
+
+    <div class="text-center mb-5">
+      <h1 class="fw-bold text-primary">
+        Panel del Usuario
+      </h1>
+
+      <p class="text-muted">
+        Gestioná tus espacios y reservas.
+      </p>
+    </div>
+
+
+    <!-- TARJETAS -->
+    <div class="row g-4 mb-5">
+
+      <div class="col-12 col-md-6 col-lg-3">
+        <a routerLink="/dashboard/user/espacios" class="text-decoration-none">
+          <div class="card h-100 p-4 shadow-sm border-0 text-center">
+            <h2 class="h5 fw-bold text-primary mb-3">
+              Ver Espacios Disponibles
+            </h2>
+
+            <p class="text-muted mb-0">
+              Consultar las salas disponibles para reservar.
+            </p>
+          </div>
+        </a>
+      </div>
+
+
+      <div class="col-12 col-md-6 col-lg-3">
+        <a routerLink="/dashboard/user/reservar" class="text-decoration-none">
+          <div class="card h-100 p-4 shadow-sm border-0 text-center">
+            <h2 class="h5 fw-bold text-primary mb-3">
+              Reservar Espacio
+            </h2>
+
+            <p class="text-muted mb-0">
+              Seleccionar una sala, fecha y horario para realizar una reserva.
+            </p>
+          </div>
+        </a>
+      </div>
+
+
+      <div class="col-12 col-md-6 col-lg-3">
+        <a routerLink="/dashboard/user/reservas" class="text-decoration-none">
+          <div class="card h-100 p-4 shadow-sm border-0 text-center">
+            <h2 class="h5 fw-bold text-primary mb-3">
+              Ver Reservas Confirmadas
+            </h2>
+
+            <p class="text-muted mb-0">
+              Consultar las reservas confirmadas.
+            </p>
+          </div>
+        </a>
+      </div>
+
+
+      <div class="col-12 col-md-6 col-lg-3">
+        <a routerLink="/dashboard/user/historial" class="text-decoration-none">
+          <div class="card h-100 p-4 shadow-sm border-0 text-center">
+            <h2 class="h5 fw-bold text-primary mb-3">
+              Ver Historial de Reservas
+            </h2>
+
+            <p class="text-muted mb-0">
+              Visualizar reservas realizadas anteriormente.
+            </p>
+          </div>
+        </a>
+      </div>
+
+    </div>
+
+
+    <!-- ACÁ APARECE EL CONTENIDO DE CADA RUTA -->
+    <div>
+      <router-outlet></router-outlet>
+    </div>
+
+  </div>
+
+</main>

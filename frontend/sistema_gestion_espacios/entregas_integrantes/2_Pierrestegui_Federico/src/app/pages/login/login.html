@@ -1,0 +1,56 @@
+<section class="bg-secondary-subtle d-flex justify-content-center align-items-center flex-grow-1"
+    style="min-height: calc(100vh - 76px);">
+
+    <div class="card p-5 shadow-lg border-0 text-center" style="max-width: 420px; width: 100%; border-radius: 12px;">
+
+        <h2 class="fw-bold mb-4 text-primary">Iniciar Sesión</h2>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+            <div class="mb-3 text-start">
+                <label for="username" class="form-label fw-medium text-muted">Correo electrónico o usuario:</label>
+                <input type="text" id="username" formControlName="username" class="form-control form-control-lg"
+                    [class.is-invalid]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
+
+                @if (loginForm.get('username')?.hasError('required') && loginForm.get('username')?.touched) {
+                <div class="invalid-feedback">El correo o usuario es obligatorio.</div>
+                }
+                @if (loginForm.get('username')?.hasError('email') && loginForm.get('username')?.touched) {
+                <div class="invalid-feedback">Utiliza un formato de correo valido</div>
+                }
+            </div>
+
+            <div class="mb-3 text-start">
+                <label for="password" class="form-label fw-medium text-muted">Contraseña:</label>
+                <input type="password" id="password" formControlName="password" class="form-control form-control-lg"
+                    [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+
+                @if (loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched) {
+                <div class="invalid-feedback">La contraseña es obligatoria.</div>
+                }
+                @if (loginForm.get('password')?.hasError('minlength') && loginForm.get('password')?.touched) {
+                <div class="invalid-feedback">La contraseña debe tener al menos 6 caracteres.</div>
+                }
+            </div>
+
+            @if (errorMessage) {
+            <div class="alert alert-danger py-2 text-start shadow-sm mt-3" role="alert">
+                {{ errorMessage }}
+            </div>
+            }
+
+            <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold mt-4 shadow-sm">
+                Ingresar
+            </button>
+        </form>
+
+        <div class="mt-4 pt-3 border-top border-light-subtle">
+            <p class="small mb-2">
+                <a routerLink="/recover-password" class="text-decoration-none fw-semibold">Olvidé mi clave</a>
+            </p>
+            <p class="small text-muted mb-0">
+                ¿No tienes cuenta? <a routerLink="/register" class="text-decoration-none fw-semibold">Registrarse</a>
+            </p>
+        </div>
+    </div>
+</section>

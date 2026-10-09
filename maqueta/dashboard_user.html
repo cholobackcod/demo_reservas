@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Usuario | Syntax Hub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="./styles/style.css" />
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html">
+                Syntax<span>Hub</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html">
+                            Inicio
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link active" href="about.html">
+                            Sobre Nosotros
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="index.html" class="btn btn-primary">
+                            Cerrar Sesión
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Usuario -->
+    <div class="dashboard-container-admin">
+        <h1 class="title">Panel del Usuario</h1>
+
+        <!-- Casos de uso -->
+        <div class="cards-container-admin">
+
+            <a href="#espacios-disponibles" class="card_admin">
+                <h2>Ver Espacios Disponibles</h2>
+                <p>Consultar las salas disponibles para reservar.</p>
+            </a>
+
+            <a href="#reservar-espacio" class="card_admin">
+                <h2>Reservar Espacio</h2>
+                <p>Seleccionar una sala, fecha y horario para realizar una reserva.</p>
+            </a>
+
+            <a href="#reservas-confirmadas" class="card_admin">
+                <h2>Ver Reservas Confirmadas</h2>
+                <p>Consultar las reservas confirmadas.</p>
+            </a>
+
+            <a href="#historial-reservas" class="card_admin">
+                <h2>Ver Historial de Reservas</h2>
+                <p>Visualizar reservas realizadas anteriormente.</p>
+            </a>
+
+        </div>
+
+        <!-- Ver espacios disponibles -->
+        <section id="espacios-disponibles" class="admin-table-section">
+
+            <div class="admin-table-header">
+                <h2>Espacios Disponibles</h2>
+            </div>
+
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Sala</th>
+                        <th>Capacidad</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>The Collaboration Hub</td>
+                        <td>12 Personas</td>
+                        <td>Disponible</td>
+                    </tr>
+
+                    <tr>
+                        <td>2</td>
+                        <td>The Focus Zone</td>
+                        <td>6 Personas</td>
+                        <td>Disponible</td>
+                    </tr>
+
+                    <tr>
+                        <td>3</td>
+                        <td>The Code Corner</td>
+                        <td>8 Personas</td>
+                        <td>Ocupada</td>
+                    </tr>
+
+                    <tr>
+                        <td>4</td>
+                        <td>The Idea Incubator</td>
+                        <td>15 Personas</td>
+                        <td>Disponible</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </section>
+
+        <!-- Reservar espacio -->
+     <section id="reservar-espacio" class="admin-table-section mb-5">
+
+            <div class="border-bottom pb-3 mb-4">
+                <h2 class="h3 mb-0 text-dark">Reservar Espacio</h2>
+            </div>
+
+            <form>
+
+                <div class="mb-4">
+                    <label for="sala" class="form-label fw-semibold">Seleccionar Sala</label>
+                    <select id="sala" class="form-select">
+                        <option selected disabled>Elegir sala disponible...</option>
+                        <option>The Collaboration Hub</option>
+                        <option>The Focus Zone</option>
+                        <option>The Code Corner</option>
+                        <option>The Idea Incubator</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="fecha-desde" class="form-label fw-semibold">Fecha y Hora Desde (Inicio)</label>
+                    <div class="input-group">
+                        <input type="date" id="fecha-desde" class="form-control">
+                        <input type="time" id="hora-desde" class="form-control">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="fecha-hasta" class="form-label fw-semibold">Fecha y Hora Hasta (Finalización)</label>
+                    <div class="input-group">
+                        <input type="date" id="fecha-hasta" class="form-control">
+                        <input type="time" id="hora-hasta" class="form-control">
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary w-100 py-2">Confirmar Reserva</button>
+                </div>
+
+            </form>
+
+        </section> 
+
+        <!-- Reservas confirmadas -->
+<section id="reservas-confirmadas" class="admin-table-section">
+
+    <div class="admin-table-header">
+        <h2>Reservas Confirmadas</h2>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+
+            <thead>
+                <tr>
+                    <th>Sala</th>
+                    <th>Fecha Desde</th>
+                    <th>Fecha Hasta</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>The Focus Zone</td>
+                    <td>20/05/2026 - 15:00 hs</td>
+                    <td>20/05/2026 - 17:00 hs</td>
+
+                    <td>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-warning btn-sm">
+                                Modificar
+                            </button>
+
+                            <button class="btn btn-danger btn-sm">
+                                Cancelar
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>The Collaboration Hub</td>
+                    <td>23/05/2026 - 09:00 hs</td>
+                    <td>23/05/2026 - 11:00 hs</td>
+
+                    <td>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-warning btn-sm">
+                                Modificar
+                            </button>
+
+                            <button class="btn btn-danger btn-sm">
+                                Cancelar
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+    </div>
+
+</section>
+
+        <!-- Historial de reservas -->
+        <section id="historial-reservas" class="admin-table-section">
+
+            <div class="admin-table-header">
+                <h2>Historial de Reservas</h2>
+            </div>
+
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Sala</th>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>The Focus Zone</td>
+                        <td>20/05/2026</td>
+                        <td>15:00 hs</td>
+                        <td>Confirmada</td>
+                    </tr>
+
+                    <tr>
+                        <td>2</td>
+                        <td>The Code Corner</td>
+                        <td>15/05/2026</td>
+                        <td>10:00 hs</td>
+                        <td>Finalizada</td>
+                    </tr>
+
+                    <tr>
+                        <td>3</td>
+                        <td>The Collaboration Hub</td>
+                        <td>10/05/2026</td>
+                        <td>18:00 hs</td>
+                        <td>Finalizada</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </section>
+
+    </div>
+
+    <footer class="bg-dark text-white py-4">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2026 Syntax Hub - Córdoba, Argentina. Hecho por Syntax Error.</p>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+</body>
+</html>

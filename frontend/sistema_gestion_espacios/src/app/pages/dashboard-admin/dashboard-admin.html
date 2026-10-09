@@ -1,0 +1,116 @@
+<main class="bg-secondary-subtle py-5">
+
+  <div class="container">
+
+<!-- TÍTULO -->
+<div class="text-center mb-5">
+  <h1 class="fw-bold text-primary">
+    Panel de Administración
+  </h1>
+
+  <p class="text-muted">
+    Gestioná salas, reservas, usuarios y reportes del sistema.
+  </p>
+</div>
+
+
+<!-- TARJETAS PRINCIPALES -->
+<div class="row g-4 mb-5">
+
+  <!-- ADMINISTRAR SALAS -->
+  <div class="col-12 col-md-6 col-lg-3">
+    <a
+      routerLink="/dashboard/admin/salas"
+      class="text-decoration-none"
+    >
+      <div class="card h-100 p-4 shadow-sm border-0 text-center">
+
+        <h2 class="h5 fw-bold text-primary mb-3">
+          Administrar Salas
+        </h2>
+
+        <p class="text-muted mb-0">
+          Crear, editar o eliminar salas disponibles.
+        </p>
+
+      </div>
+    </a>
+  </div>
+
+
+  <!-- GESTIONAR RESERVAS -->
+  <div class="col-12 col-md-6 col-lg-3">
+    <a
+      routerLink="/dashboard/admin/reservas"
+      class="text-decoration-none"
+    >
+      <div class="card h-100 p-4 shadow-sm border-0 text-center">
+
+        <h2 class="h5 fw-bold text-primary mb-3">
+          Gestionar Reservas
+        </h2>
+
+        <p class="text-muted mb-0">
+          Ver y administrar las reservas realizadas.
+        </p>
+
+      </div>
+    </a>
+  </div>
+
+
+  <!-- GESTIONAR USUARIOS -->
+  <div class="col-12 col-md-6 col-lg-3">
+    <a
+      routerLink="/dashboard/admin/usuarios"
+      class="text-decoration-none"
+    >
+      <div class="card h-100 p-4 shadow-sm border-0 text-center">
+
+        <h2 class="h5 fw-bold text-primary mb-3">
+          Gestionar Usuarios
+        </h2>
+
+        <p class="text-muted mb-0">
+          Administrar cuentas y permisos de usuarios.
+        </p>
+
+      </div>
+    </a>
+  </div>
+
+
+  <!-- REPORTES -->
+  <div class="col-12 col-md-6 col-lg-3">
+    <a
+      routerLink="/dashboard/admin/reportes"
+      class="text-decoration-none"
+    >
+      <div class="card h-100 p-4 shadow-sm border-0 text-center">
+
+        <h2 class="h5 fw-bold text-primary mb-3">
+          Ver Reportes
+        </h2>
+
+        <p class="text-muted mb-0">
+          Consultar estadísticas e información del sistema.
+        </p>
+
+      </div>
+    </a>
+  </div>
+
+</div>
+
+
+<!--
+  ACÁ APARECE EL CONTENIDO
+  DE CADA RUTA HIJA DEL DASHBOARD ADMIN.
+-->
+<div>
+  <router-outlet></router-outlet>
+</div>
+
+  </div>
+
+</main>

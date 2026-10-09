@@ -1,0 +1,80 @@
+<div class="section-header mb-4">
+  <h2>Reportes y estadísticas</h2>
+  <p class="text-muted">
+    Consultá el uso de los laboratorios disponibles en el sistema.
+  </p>
+</div>
+
+@if (loading) {
+  <div class="text-center py-4">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+} @else {
+  <!-- MÉTRICAS -->
+  <div class="metrics-container mb-5">
+    <div class="metric-card">
+      <h3>{{ totalReservas }}</h3>
+      <p>Reservas totales</p>
+    </div>
+
+    <div class="metric-card">
+      <h3>{{ docentesRegistrados }}</h3>
+      <p>Docentes registrados</p>
+    </div>
+
+    <div class="metric-card">
+      <h3>{{ labsDisponibles }}</h3>
+      <p>Laboratorios disponibles</p>
+    </div>
+
+    <div class="metric-card">
+      <h3>{{ ocupacionPromedio }}%</h3>
+      <p>Uso relativo estimado</p>
+    </div>
+  </div>
+
+  <!-- ESTADÍSTICAS POR LABORATORIO -->
+  <div class="statistics-section mb-5">
+    <h3 class="h5 fw-bold text-primary mb-3">
+      Estadísticas de uso por laboratorio
+    </h3>
+
+    <div class="table-responsive">
+      <table class="table table-striped table-hover align-middle">
+        <thead>
+          <tr>
+            <th>Laboratorio</th>
+            <th>Reservas totales</th>
+            <th>Porcentaje de uso total</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (stat of statsPorLab; track stat.nombre) {
+            <tr>
+              <td><strong>{{ stat.nombre }}</strong></td>
+              <td>{{ stat.reservasCount }}</td>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <div class="progress flex-grow-1" style="height: 10px;">
+                    <div
+                      class="progress-bar bg-info"
+                      role="progressbar"
+                      [style.width.%]="stat.porcentaje"
+                    ></div>
+                  </div>
+                  <span>{{ stat.porcentaje }}%</span>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="3" class="text-center text-muted">No se encontraron datos de laboratorios.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}

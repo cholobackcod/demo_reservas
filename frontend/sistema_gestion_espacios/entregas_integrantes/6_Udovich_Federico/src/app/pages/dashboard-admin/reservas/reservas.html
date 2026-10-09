@@ -1,0 +1,66 @@
+<div class="section-header mb-4">
+  <h2>Gestionar reservas</h2>
+  <p class="text-muted">
+    Revisá y administrá las reservas realizadas por los docentes.
+  </p>
+</div>
+
+@if (loading) {
+<div class="text-center py-4">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Cargando...</span>
+  </div>
+</div>
+} @else {
+<div class="table-responsive">
+  <table class="table table-striped table-hover align-middle">
+    <thead>
+      <tr>
+
+        <th>Docente</th>
+        <th>Laboratorio</th>
+        <th>Fecha</th>
+        <th>Hora</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (reserva of reservas; track reserva.id) {
+      <tr>
+
+        <td><strong>{{ reserva.docenteNombre }}</strong></td>
+        <td>{{ reserva.laboratorioNombre }}</td>
+        <td>{{ reserva.fecha }}</td>
+        <td>{{ reserva.hora }}</td>
+        <td>
+          <span class="badge text-capitalize" [class.bg-success]="reserva.estado === 'confirmada'"
+            [class.bg-secondary]="reserva.estado === 'finalizada'" [class.bg-danger]="reserva.estado === 'cancelada'">
+            {{ reserva.estado }}
+          </span>
+        </td>
+        <td>
+          <div class="dropdown d-inline-block me-2">
+            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+              Estado
+            </button>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" (click)="cambiarEstado(reserva.id, 'confirmada')">Confirmada</a></li>
+              <li><a class="dropdown-item" (click)="cambiarEstado(reserva.id, 'finalizada')">Finalizada</a></li>
+              <li><a class="dropdown-item" (click)="cambiarEstado(reserva.id, 'cancelada')">Cancelada</a></li>
+            </ul>
+          </div>
+          <button class="btn btn-danger btn-sm" (click)="cancelarReserva(reserva.id)">
+            Eliminar
+          </button>
+        </td>
+      </tr>
+      } @empty {
+      <tr>
+        <td colspan="7" class="text-center text-muted">No se encontraron reservas registradas.</td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</div>
+}

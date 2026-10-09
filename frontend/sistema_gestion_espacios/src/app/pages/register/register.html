@@ -1,0 +1,88 @@
+<section class="register-page d-flex justify-content-center align-items-center flex-grow-1">
+
+    <div class="register-card card p-5 shadow-lg border-0 text-center">
+
+        <h2 class="fw-bold mb-4 text-primary">Crear una cuenta</h2>
+
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+
+            <div class="mb-3 text-start">
+                <label for="nombre" class="form-label fw-medium text-muted">Nombre:</label>
+                <input type="text" id="nombre" formControlName="nombre" placeholder="Ingrese su nombre"
+                    class="form-control form-control-lg"
+                    [class.is-invalid]="registerForm.get('nombre')?.invalid && registerForm.get('nombre')?.touched">
+
+                @if (registerForm.get('nombre')?.hasError('required') && registerForm.get('nombre')?.touched) {
+                <div class="invalid-feedback">El nombre es obligatorio.</div>
+                }
+            </div>
+
+            <div class="mb-3 text-start">
+                <label for="apellido" class="form-label fw-medium text-muted">Apellido:</label>
+                <input type="text" id="apellido" formControlName="apellido" placeholder="Ingrese su apellido"
+                    class="form-control form-control-lg"
+                    [class.is-invalid]="registerForm.get('apellido')?.invalid && registerForm.get('apellido')?.touched">
+
+                @if (registerForm.get('apellido')?.hasError('required') && registerForm.get('apellido')?.touched) {
+                <div class="invalid-feedback">El apellido es obligatorio.</div>
+                }
+            </div>
+
+            <div class="mb-3 text-start">
+                <label for="email" class="form-label fw-medium text-muted">Correo electrónico:</label>
+                <input type="email" id="email" formControlName="email" placeholder="ejemplo@mail.com"
+                    class="form-control form-control-lg"
+                    [class.is-invalid]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+
+                @if (registerForm.get('email')?.hasError('required') && registerForm.get('email')?.touched) {
+                <div class="invalid-feedback">El correo es obligatorio.</div>
+                }
+                @if (registerForm.get('email')?.hasError('email') && registerForm.get('email')?.touched) {
+                <div class="invalid-feedback">Utiliza un formato de correo válido.</div>
+                }
+            </div>
+
+            <div class="mb-3 text-start">
+                <label for="password" class="form-label fw-medium text-muted">Contraseña:</label>
+                <input type="password" id="password" formControlName="password" placeholder="Mínimo 8 caracteres"
+                    class="form-control form-control-lg"
+                    [class.is-invalid]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+
+                @if (registerForm.get('password')?.hasError('required') && registerForm.get('password')?.touched) {
+                <div class="invalid-feedback">La contraseña es obligatoria.</div>
+                }
+                @if (registerForm.get('password')?.hasError('minlength') && registerForm.get('password')?.touched) {
+                <div class="invalid-feedback">La contraseña debe tener al menos 8 caracteres.</div>
+                }
+            </div>
+
+            <div class="mb-3 text-start">
+                <label for="confirmPassword" class="form-label fw-medium text-muted">Confirmar contraseña:</label>
+                <input type="password" id="confirmPassword" formControlName="confirmPassword"
+                    placeholder="Reingrese su contraseña" class="form-control form-control-lg"
+                    [class.is-invalid]="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched">
+
+                @if (registerForm.get('confirmPassword')?.hasError('required') &&
+                registerForm.get('confirmPassword')?.touched) {
+                <div class="invalid-feedback">Confirmar la contraseña es obligatorio.</div>
+                }
+            </div>
+
+            @if (errorMessage) {
+            <div class="alert alert-danger py-2 text-start shadow-sm mt-3" role="alert">
+                {{ errorMessage }}
+            </div>
+            }
+
+            <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold mt-4 shadow-sm">
+                Registrarme
+            </button>
+        </form>
+
+        <div class="mt-4 pt-3 border-top border-light-subtle">
+            <p class="small text-muted mb-0">
+                ¿Ya tienes cuenta? <a routerLink="/login" class="text-decoration-none fw-semibold">Iniciar Sesión</a>
+            </p>
+        </div>
+    </div>
+</section>

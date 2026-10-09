@@ -1,0 +1,113 @@
+<div class="section-header mb-4">
+  <h2>Gestionar usuarios</h2>
+  <p class="text-muted">
+    Administrá cuentas y permisos de los usuarios del sistema.
+  </p>
+</div>
+
+<div class="d-flex justify-content-end mb-4">
+  <button class="btn btn-success" (click)="abrirCrear()" *ngIf="!showForm">
+    <i class="bi bi-person-plus me-1"></i> Crear usuario
+  </button>
+</div>
+
+@if (showForm) {
+<div class="card shadow-sm p-4 mb-4 border-info">
+  <h4 class="fw-bold text-primary mb-3">
+    {{ editingUserId ? 'Editar usuario' : 'Nuevo usuario' }}
+  </h4>
+  <form [formGroup]="userForm" (ngSubmit)="guardarUsuario()">
+    <div class="row g-3 mb-3">
+      <div class="col-md-6">
+        <label for="nombre" class="form-label fw-semibold">Nombre:</label>
+        <input type="text" id="nombre" formControlName="nombre" class="form-control"
+          [class.is-invalid]="userForm.get('nombre')?.invalid && userForm.get('nombre')?.touched">
+      </div>
+      <div class="col-md-6">
+        <label for="apellido" class="form-label fw-semibold">Apellido:</label>
+        <input type="text" id="apellido" formControlName="apellido" class="form-control"
+          [class.is-invalid]="userForm.get('apellido')?.invalid && userForm.get('apellido')?.touched">
+      </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-md-5">
+        <label for="email" class="form-label fw-semibold">Email:</label>
+        <input type="email" id="email" formControlName="email" class="form-control"
+          [class.is-invalid]="userForm.get('email')?.invalid && userForm.get('email')?.touched">
+      </div>
+      <div class="col-md-4">
+        <label for="password" class="form-label fw-semibold">
+          Contraseña {{ editingUserId ? '(opcional)' : '' }}:
+        </label>
+        <input type="password" id="password" formControlName="password" class="form-control"
+          [class.is-invalid]="userForm.get('password')?.invalid && userForm.get('password')?.touched">
+      </div>
+      <div class="col-md-3">
+        <label for="rol" class="form-label fw-semibold">Rol:</label>
+        <select id="rol" formControlName="rol" class="form-select">
+          <option value="docente">Docente</option>
+          <option value="admin">Administrador</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+      <button type="button" class="btn btn-secondary" (click)="cancelarForm()">
+        Cancelar
+      </button>
+      <button type="submit" class="btn btn-primary fw-bold">
+        {{ editingUserId ? 'Guardar Cambios' : 'Crear Usuario' }}
+      </button>
+    </div>
+  </form>
+</div>
+}
+
+@if (loading) {
+<div class="text-center py-4">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Cargando...</span>
+  </div>
+</div>
+} @else {
+<div class="table-responsive">
+  <table class="table table-striped table-hover align-middle">
+    <thead>
+      <tr>
+
+        <th>Nombre</th>
+        <th>Email</th>
+        <th>Rol</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (u of users; track u.id) {
+      <tr>
+
+        <td><strong>{{ u.nombre }} {{ u.apellido }}</strong></td>
+        <td>{{ u.email }}</td>
+        <td>
+          <span class="badge" [class.bg-danger]="u.rol === 'admin'" [class.bg-primary]="u.rol === 'docente'">
+            {{ u.rol === 'admin' ? 'Administrador' : 'Docente' }}
+          </span>
+        </td>
+        <td>
+          <button class="btn btn-warning btn-sm me-2" (click)="abrirEditar(u)">
+            Modificar
+          </button>
+          <button class="btn btn-danger btn-sm" (click)="eliminarUsuario(u.id)">
+            Eliminar
+          </button>
+        </td>
+      </tr>
+      } @empty {
+      <tr>
+        <td colspan="5" class="text-center text-muted">No hay usuarios registrados.</td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</div>
+}
