@@ -10,6 +10,7 @@ export interface User {
   email: string;
   password?: string;
   rol: 'admin' | 'docente';
+  activo?: boolean;
 }
 
 @Injectable({
@@ -17,14 +18,14 @@ export interface User {
 })
 export class AuthService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/users`;
+  private apiUrl = environment.apiUrl;
 
-  login(email: string, password: string): Observable<User[]> {
-    return this.http.get<User[]>(`${this.apiUrl}?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
+  login(email: string, password: string): Observable<User> {
+    return this.http.post<User>(`${this.apiUrl}/auth/login/`, { email, password });
   }
 
   register(userData: User): Observable<User> {
-    return this.http.post<User>(this.apiUrl, userData);
+    return this.http.post<User>(`${this.apiUrl}/auth/register/`, userData);
   }
 
   // --- Utilidades de sesión ---

@@ -53,7 +53,6 @@ export class Usuarios implements OnInit {
     });
   }
 
-
   abrirCrear(): void {
     this.editingUserId = null;
     this.userForm.reset({ rol: 'docente' });
@@ -109,19 +108,11 @@ export class Usuarios implements OnInit {
         },
         error: (err) => {
           console.error('Error al actualizar usuario:', err);
-          alert('No se pudo actualizar el usuario.');
+          const backendErr = err.error?.email?.[0] || err.error?.nombre?.[0] || 'No se pudo actualizar el usuario.';
+          alert(backendErr);
         }
       });
     } else {
-      let nextId = 1;
-      if (this.users && this.users.length > 0) {
-        const numericIds = this.users.map(u => Number(u.id)).filter(id => !isNaN(id));
-        if (numericIds.length > 0) {
-          nextId = Math.max(...numericIds) + 1;
-        }
-      }
-      userData.id = nextId;
-
       this.usersService.createUser(userData).subscribe({
         next: () => {
           alert('Usuario creado correctamente.');
@@ -130,7 +121,8 @@ export class Usuarios implements OnInit {
         },
         error: (err) => {
           console.error('Error al crear usuario:', err);
-          alert('No se pudo crear el usuario.');
+          const backendErr = err.error?.email?.[0] || err.error?.nombre?.[0] || 'No se pudo crear el usuario.';
+          alert(backendErr);
         }
       });
     }
@@ -151,4 +143,4 @@ export class Usuarios implements OnInit {
       });
     }
   }
-}
+}

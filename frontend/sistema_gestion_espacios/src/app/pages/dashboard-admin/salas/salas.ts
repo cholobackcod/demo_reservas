@@ -51,7 +51,6 @@ export class Salas implements OnInit {
     });
   }
 
-
   abrirCrear(): void {
     this.editingLabId = null;
     this.labForm.reset({ capacidad: 30, ciclo: 'Ciclo Básico' });
@@ -96,19 +95,11 @@ export class Salas implements OnInit {
         },
         error: (err) => {
           console.error('Error al actualizar laboratorio:', err);
-          alert('No se pudo actualizar el laboratorio.');
+          const backendErr = err.error?.nombre?.[0] || err.error?.capacidad?.[0] || 'No se pudo actualizar el laboratorio.';
+          alert(backendErr);
         }
       });
     } else {
-      let nextId = 1;
-      if (this.labs && this.labs.length > 0) {
-        const numericIds = this.labs.map(l => Number(l.id)).filter(id => !isNaN(id));
-        if (numericIds.length > 0) {
-          nextId = Math.max(...numericIds) + 1;
-        }
-      }
-      labData.id = nextId;
-
       this.labsService.createLab(labData).subscribe({
         next: () => {
           alert('Laboratorio creado correctamente.');
@@ -117,7 +108,8 @@ export class Salas implements OnInit {
         },
         error: (err) => {
           console.error('Error al crear laboratorio:', err);
-          alert('No se pudo crear el laboratorio.');
+          const backendErr = err.error?.nombre?.[0] || err.error?.capacidad?.[0] || 'No se pudo crear el laboratorio.';
+          alert(backendErr);
         }
       });
     }
@@ -138,4 +130,4 @@ export class Salas implements OnInit {
       });
     }
   }
-}
+}

@@ -19,25 +19,25 @@ export interface Lab {
 })
 export class LabsService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/labs`;
+  private apiUrl = `${environment.apiUrl}/salas/`;
 
   getLabs(): Observable<Lab[]> {
     return this.http.get<Lab[]>(this.apiUrl);
   }
 
   getLabById(id: number | string): Observable<Lab> {
-    return this.http.get<Lab>(`${this.apiUrl}/${id}`);
+    return this.http.get<Lab>(`${this.apiUrl}${id}/`);
   }
 
   createLab(labData: Lab): Observable<Lab> {
     return this.http.post<Lab>(this.apiUrl, labData);
   }
 
-  updateLab(id: number | string, labData: Lab): Observable<Lab> {
-    return this.http.put<Lab>(`${this.apiUrl}/${id}`, labData);
+  updateLab(id: number | string, labData: Partial<Lab>): Observable<Lab> {
+    return this.http.patch<Lab>(`${this.apiUrl}${id}/`, labData);
   }
 
   deleteLab(id: number | string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+    return this.http.delete(`${this.apiUrl}${id}/`);
   }
 }

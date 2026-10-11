@@ -9,14 +9,14 @@ import { User } from './auth';
 })
 export class UsersService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/users`;
+  private apiUrl = `${environment.apiUrl}/usuarios/`;
 
   getUsers(): Observable<User[]> {
     return this.http.get<User[]>(this.apiUrl);
   }
 
   getUserById(id: number | string): Observable<User> {
-    return this.http.get<User>(`${this.apiUrl}/${id}`);
+    return this.http.get<User>(`${this.apiUrl}${id}/`);
   }
 
   createUser(userData: User): Observable<User> {
@@ -24,10 +24,10 @@ export class UsersService {
   }
 
   updateUser(id: number | string, userData: Partial<User>): Observable<User> {
-    return this.http.patch<User>(`${this.apiUrl}/${id}`, userData);
+    return this.http.patch<User>(`${this.apiUrl}${id}/`, userData);
   }
 
   deleteUser(id: number | string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+    return this.http.delete(`${this.apiUrl}${id}/`);
   }
 }

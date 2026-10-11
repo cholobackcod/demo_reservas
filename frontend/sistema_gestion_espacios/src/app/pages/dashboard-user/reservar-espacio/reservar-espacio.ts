@@ -39,7 +39,7 @@ export class ReservarEspacio implements OnInit {
   ngOnInit(): void {
     this.labsService.getLabs().subscribe({
       next: (labs) => {
-        this.salas = labs;
+        this.salas = labs.filter(l => l.activa !== false);
         this.cdr.markForCheck();
       },
       error: (err) => {
@@ -48,7 +48,6 @@ export class ReservarEspacio implements OnInit {
       }
     });
   }
-
 
   confirmarReserva(): void {
     if (this.reservaForm.invalid) {
@@ -59,8 +58,7 @@ export class ReservarEspacio implements OnInit {
     this.errorMessage = '';
 
     const currentUser = this.authService.getCurrentUser();
-    const rawUserId = currentUser?.id ?? 2;
-    const usuarioId = Number(rawUserId);
+    const usuarioId = currentUser?.id ? Number(currentUser.id) : 2;
 
     const { sala, fechaDesde, horaDesde, fechaHasta, horaHasta } = this.reservaForm.value;
     const salaId = Number(sala);
@@ -74,60 +72,24 @@ export class ReservarEspacio implements OnInit {
       return;
     }
 
-    this.reservationService.getAllReservations().subscribe({
-      next: (existing) => {
-        // Verificar si existe solapamiento con alguna reserva no cancelada para la misma sala
-        const tieneSolapamiento = existing.some(r => {
-          if (r.estado === 'cancelada') return false;
-          if (Number(r.salaId) !== salaId) return false;
+    const nuevaReserva: Reservation = {
+      usuarioId: usuarioId,
+      salaId: salaId,
+      inicio: inicioNuevo,
+      fin: finNuevo,
+      estado: 'confirmada'
+    };
 
-          const rInicio = r.inicio;
-          const rFin = r.fin;
-
-          // Dos rangos se solapan si: inicioNuevo < rFin && finNuevo > rInicio
-          return (inicioNuevo < rFin && finNuevo > rInicio);
-        });
-
-        if (tieneSolapamiento) {
-          this.errorMessage = 'El laboratorio seleccionado ya se encuentra reservado en ese rango de fecha y horario por otro docente.';
-          this.cdr.markForCheck();
-          return;
-        }
-
-        // Calcular el siguiente ID numérico secuencial
-        let nextId = 1;
-        if (existing && existing.length > 0) {
-          const numericIds = existing.map(r => Number(r.id)).filter(id => !isNaN(id));
-          if (numericIds.length > 0) {
-            nextId = Math.max(...numericIds) + 1;
-          }
-        }
-
-        const nuevaReserva: Reservation = {
-          id: nextId,
-          usuarioId: usuarioId,
-          salaId: salaId,
-          inicio: inicioNuevo,
-          fin: finNuevo,
-          estado: 'confirmada'
-        };
-
-        this.reservationService.createReservation(nuevaReserva).subscribe({
-          next: () => {
-            alert('¡Reserva realizada con éxito en el sistema!');
-            this.reservaForm.reset();
-            this.router.navigate(['/dashboard/user/reservas']);
-          },
-          error: (err) => {
-            console.error('Error al crear reserva:', err);
-            this.errorMessage = 'Ocurrió un error al registrar la reserva.';
-            this.cdr.markForCheck();
-          }
-        });
+    this.reservationService.createReservation(nuevaReserva).subscribe({
+      next: () => {
+        alert('¡Reserva realizada con éxito en el sistema!');
+        this.reservaForm.reset();
+        this.router.navigate(['/dashboard/user/reservas']);
       },
       error: (err) => {
-        console.error('Error al consultar disponibilidad de reservas:', err);
-        this.errorMessage = 'No se pudo verificar la disponibilidad de reservas con el servidor.';
+        console.error('Error al crear reserva:', err);
+        const backendErr = err.error?.non_field_errors?.[0] || err.error?.fin?.[0] || err.error?.detail || 'El laboratorio seleccionado ya se encuentra reservado en ese horario por otro docente.';
+        this.errorMessage = backendErr;
         this.cdr.markForCheck();
       }
     });
@@ -137,4 +99,4 @@ export class ReservarEspacio implements OnInit {
     const control = this.reservaForm.get(campo);
     return !!control && control.invalid && control.touched;
   }
-}
+}

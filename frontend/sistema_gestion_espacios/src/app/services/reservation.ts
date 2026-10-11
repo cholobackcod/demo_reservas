@@ -17,7 +17,7 @@ export interface Reservation {
 })
 export class ReservationService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/reservation`;
+  private apiUrl = `${environment.apiUrl}/reservas/`;
 
   // Obtiene el historial completo de reservas
   getAllReservations(): Observable<Reservation[]> {
@@ -39,10 +39,10 @@ export class ReservationService {
   }
 
   updateReservation(id: number | string, reservationData: Partial<Reservation>): Observable<Reservation> {
-    return this.http.patch<Reservation>(`${this.apiUrl}/${id}`, reservationData);
+    return this.http.patch<Reservation>(`${this.apiUrl}${id}/`, reservationData);
   }
 
   deleteReservation(id: number | string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+    return this.http.delete(`${this.apiUrl}${id}/`);
   }
 }

@@ -32,9 +32,8 @@ export class Login {
     const { username, password } = this.loginForm.value;
 
     this.authService.login(username!, password!).subscribe({
-      next: (users) => {
-        if (users && users.length > 0) {
-          const user = users[0];
+      next: (user) => {
+        if (user && user.id) {
           this.authService.setCurrentUser(user);
           this.errorMessage = '';
           if (user.rol === 'admin') {
@@ -48,8 +47,8 @@ export class Login {
       },
       error: (err) => {
         console.error('Error durante inicio de sesión:', err);
-        this.errorMessage = 'Error de conexión con el servidor backend.';
+        this.errorMessage = err.error?.error || 'Email o contraseña incorrectos.';
       }
     });
   }
-}
+}
