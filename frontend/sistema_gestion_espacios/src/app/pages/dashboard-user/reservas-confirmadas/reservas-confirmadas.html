@@ -1,51 +1,214 @@
 <div class="section-header mb-4">
-  <h2>Reservas confirmadas</h2>
-  <p class="text-muted">
-    Consultá y administrá tus reservas actuales.
-  </p>
-</div>
-
-@if (loading) {
-  <div class="text-center py-4">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Cargando...</span>
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <div>
+      <h2 class="fw-bold mb-1"><i class="bi bi-calendar-check me-2 text-primary"></i>Reservas Confirmadas</h2>
+      <p class="text-muted mb-0">
+        Consultá, modificá o cancelá tus reservas activas en los laboratorios escolares.
+      </p>
     </div>
   </div>
-} @else {
-  <div class="table-responsive">
-    <table class="table table-striped table-hover align-middle">
-      <thead>
-        <tr>
-          <th>Laboratorio</th>
-          <th>Fecha desde</th>
-          <th>Fecha hasta</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (reserva of reservas; track reserva.id) {
-          <tr>
-            <td><strong>{{ reserva.salaNombre }}</strong></td>
-            <td>{{ reserva.inicio }}</td>
-            <td>{{ reserva.fin }}</td>
-            <td>
-              <div class="d-flex gap-2">
-                <button
-                  type="button"
-                  class="btn btn-danger btn-sm"
-                  (click)="cancelarReserva(reserva.id)"
-                >
-                  Cancelar
-                </button>
-              </div>
-            </td>
-          </tr>
-        } @empty {
-          <tr>
-            <td colspan="4" class="text-center text-muted">No tenés reservas confirmadas actualmente.</td>
-          </tr>
-        }
-      </tbody>
-    </table>
+</div>
+
+@if (exitoMensaje) {
+  <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+    <i class="bi bi-check-circle-fill me-2"></i>{{ exitoMensaje }}
+    <button type="button" class="btn-close" (click)="exitoMensaje = ''"></button>
   </div>
-}
+}
+
+@if (loading) {
+  <div class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando reservas...</span>
+    </div>
+    <div class="text-muted mt-2 small">Cargando tus reservas confirmadas...</div>
+  </div>
+} @else {
+  <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th class="ps-3">Laboratorio</th>
+            <th>Fecha y Horario</th>
+            <th>Curso / Materia</th>
+            <th>Netbooks</th>
+            <th>Estado</th>
+            <th class="text-end pe-3">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (reserva of reservas; track reserva.id) {
+            <tr>
+              <td class="ps-3">
+                <strong class="text-dark">{{ reserva.salaNombre }}</strong>
+                @if (reserva.offline) {
+                  <span class="badge bg-warning text-dark ms-2" title="Reserva guardada localmente (pendiente de sincronización)"><i class="bi bi-cloud-slash me-1"></i>Offline</span>
+                }
+              </td>
+              <td>
+                <div class="small fw-semibold text-primary">
+                  <i class="bi bi-calendar-event me-1"></i>{{ reserva.inicio }}
+                </div>
+                <div class="small text-muted">
+                  <i class="bi bi-arrow-return-right me-1"></i>Hasta: {{ reserva.fin }}
+                </div>
+              </td>
+              <td>
+                <div class="fw-semibold text-dark">{{ reserva.materia }}</div>
+                <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle">{{ reserva.curso }}</span>
+              </td>
+              <td>
+                @if (reserva.netbooks && reserva.netbooks > 0) {
+                  <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">
+                    <i class="bi bi-laptop me-1"></i>{{ reserva.netbooks }} unidades
+                  </span>
+                } @else {
+                  <span class="text-muted small">0</span>
+                }
+              </td>
+              <td>
+                <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
+                  <i class="bi bi-check-circle me-1"></i>Confirmada
+                </span>
+              </td>
+              <td class="text-end pe-3">
+                <div class="d-inline-flex gap-2">
+                  <!-- BOTÓN EDITAR (HU04) -->
+                  <button
+                    type="button"
+                    class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1 shadow-sm"
+                    (click)="abrirModalEdicion(reserva)"
+                    title="Editar fecha, horario, materia o netbooks"
+                  >
+                    <i class="bi bi-pencil-square"></i>
+                    <span>Editar</span>
+                  </button>
+
+                  <!-- BOTÓN CANCELAR (HU04) -->
+                  <button
+                    type="button"
+                    class="btn btn-outline-danger btn-sm d-inline-flex align-items-center gap-1 shadow-sm"
+                    (click)="cancelarReserva(reserva.id)"
+                    title="Cancelar reserva y liberar el horario"
+                  >
+                    <i class="bi bi-x-circle"></i>
+                    <span>Cancelar</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="text-center py-5 text-muted">
+                <i class="bi bi-calendar-x fs-1 d-block mb-2 text-secondary opacity-50"></i>
+                <div class="fw-semibold">No tenés reservas confirmadas actualmente.</div>
+                <div class="small mt-1">Podés reservar un espacio ingresando en la sección "Reservar Espacio" o consultando la "Agenda Semanal".</div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}
+
+<!-- MODAL DE EDICIÓN DE RESERVA (HU04) -->
+@if (reservaEnEdicion) {
+  <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5); z-index: 1050;" (click)="cerrarModalEdicion()">
+    <div class="modal-dialog modal-dialog-centered modal-lg" (click)="$event.stopPropagation()">
+      <div class="modal-content shadow border-0">
+        <div class="modal-header bg-primary text-white py-3">
+          <h5 class="modal-title fw-bold mb-0">
+            <i class="bi bi-pencil-square me-2"></i>Editar Reserva #{{ reservaEnEdicion.id }}
+          </h5>
+          <button type="button" class="btn-close btn-close-white" (click)="cerrarModalEdicion()"></button>
+        </div>
+
+        <form [formGroup]="editForm" (ngSubmit)="guardarEdicion()">
+          <div class="modal-body p-4">
+
+            @if (errorEdicion) {
+              <div class="alert alert-danger py-2 mb-3 shadow-sm border-danger" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ errorEdicion }}
+              </div>
+            }
+
+            <div class="row g-3">
+              <!-- LABORATORIO -->
+              <div class="col-12 col-md-6">
+                <label for="editSala" class="form-label fw-semibold">Laboratorio</label>
+                <select id="editSala" class="form-select" formControlName="salaId">
+                  @for (lab of labs; track lab.id) {
+                    <option [value]="lab.id">{{ lab.nombre }}</option>
+                  }
+                </select>
+              </div>
+
+              <!-- FECHA -->
+              <div class="col-12 col-md-6">
+                <label for="editFecha" class="form-label fw-semibold">Fecha de Reserva</label>
+                <input id="editFecha" type="date" class="form-control" formControlName="fecha" [min]="hoyFecha">
+              </div>
+
+              <!-- HORA DESDE -->
+              <div class="col-12 col-md-6">
+                <label for="editHoraDesde" class="form-label fw-semibold">Hora de Inicio (07:00 a 18:00 hs)</label>
+                <input id="editHoraDesde" type="time" min="07:00" max="18:00" class="form-control" formControlName="horaDesde">
+              </div>
+
+              <!-- HORA HASTA -->
+              <div class="col-12 col-md-6">
+                <label for="editHoraHasta" class="form-label fw-semibold">Hora de Fin (07:00 a 18:00 hs)</label>
+                <input id="editHoraHasta" type="time" min="07:00" max="18:00" class="form-control" formControlName="horaHasta">
+              </div>
+
+              <!-- CURSO -->
+              <div class="col-12 col-md-4">
+                <label for="editCurso" class="form-label fw-semibold">Curso / Año</label>
+                <select id="editCurso" class="form-select" formControlName="curso">
+                  @for (c of cursosDisponibles; track c) {
+                    <option [value]="c">{{ c }}</option>
+                  }
+                </select>
+              </div>
+
+              <!-- MATERIA -->
+              <div class="col-12 col-md-5">
+                <label for="editMateria" class="form-label fw-semibold">Materia</label>
+                <select id="editMateria" class="form-select" formControlName="materia">
+                  @for (m of materiasDisponibles; track m) {
+                    <option [value]="m">{{ m }}</option>
+                  }
+                </select>
+                <div class="text-muted small mt-1">Tope: máx 3 reservas semanales por materia (HU05).</div>
+              </div>
+
+              <!-- NETBOOKS -->
+              <div class="col-12 col-md-3">
+                <label for="editNetbooks" class="form-label fw-semibold">Netbooks</label>
+                <input id="editNetbooks" type="number" min="0" max="45" class="form-control" formControlName="netbooks">
+              </div>
+            </div>
+
+          </div>
+
+          <div class="modal-footer py-2 bg-light">
+            <button type="button" class="btn btn-secondary" (click)="cerrarModalEdicion()" [disabled]="guardandoEdicion">
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary fw-semibold" [disabled]="guardandoEdicion">
+              @if (guardandoEdicion) {
+                <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                <span>Guardando cambios...</span>
+              } @else {
+                <i class="bi bi-check-lg me-1"></i>Guardar Modificaciones
+              }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+

@@ -16,6 +16,7 @@ import { EspaciosDisponibles } from './pages/dashboard-user/espacios-disponibles
 import { ReservarEspacio } from './pages/dashboard-user/reservar-espacio/reservar-espacio';
 import { ReservasConfirmadas } from './pages/dashboard-user/reservas-confirmadas/reservas-confirmadas';
 import { HistorialReservas } from './pages/dashboard-user/historial-reservas/historial-reservas';
+import { AgendaSemanal } from './pages/dashboard-user/agenda-semanal/agenda-semanal';
 
 export const routes: Routes = [
   {
@@ -120,6 +121,11 @@ export const routes: Routes = [
         path: 'reservas',
         component: ReservasConfirmadas,
         data: { title: 'Reservas Confirmadas' },
+      },
+      {
+        path: 'agenda',
+        component: AgendaSemanal,
+        data: { title: 'Agenda Semanal Unificada' },
       },
       {
         path: 'historial',

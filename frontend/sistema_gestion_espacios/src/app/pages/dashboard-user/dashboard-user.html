@@ -14,62 +14,73 @@
 
 
     <!-- TARJETAS -->
-    <div class="row g-4 mb-5">
+    <div class="row g-3 mb-5">
 
-      <div class="col-12 col-md-6 col-lg-3">
+      <div class="col-12 col-sm-6 col-lg">
         <a routerLink="/dashboard/user/espacios" class="text-decoration-none">
-          <div class="card h-100 p-4 shadow-sm border-0 text-center">
-            <h2 class="h5 fw-bold text-primary mb-3">
-              Ver Espacios Disponibles
+          <div class="card h-100 p-3 shadow-sm border-0 text-center hover-card">
+            <div class="fs-2 text-primary mb-2"><i class="bi bi-door-open"></i></div>
+            <h2 class="h6 fw-bold text-primary mb-2">
+              Espacios Disponibles
             </h2>
-
-            <p class="text-muted mb-0">
-              Consultar las salas disponibles para reservar.
+            <p class="text-muted small mb-0">
+              Consultar laboratorios y equipamiento.
             </p>
           </div>
         </a>
       </div>
 
+      <div class="col-12 col-sm-6 col-lg">
+        <a routerLink="/dashboard/user/agenda" class="text-decoration-none">
+          <div class="card h-100 p-3 shadow-sm border-0 text-center hover-card border-top border-primary border-3">
+            <div class="fs-2 text-primary mb-2"><i class="bi bi-calendar3-week"></i></div>
+            <h2 class="h6 fw-bold text-primary mb-2">
+              Agenda Semanal
+            </h2>
+            <p class="text-muted small mb-0">
+              Grilla semanal unificada de ocupación (HU02).
+            </p>
+          </div>
+        </a>
+      </div>
 
-      <div class="col-12 col-md-6 col-lg-3">
+      <div class="col-12 col-sm-6 col-lg">
         <a routerLink="/dashboard/user/reservar" class="text-decoration-none">
-          <div class="card h-100 p-4 shadow-sm border-0 text-center">
-            <h2 class="h5 fw-bold text-primary mb-3">
+          <div class="card h-100 p-3 shadow-sm border-0 text-center hover-card">
+            <div class="fs-2 text-primary mb-2"><i class="bi bi-calendar-plus"></i></div>
+            <h2 class="h6 fw-bold text-primary mb-2">
               Reservar Espacio
             </h2>
-
-            <p class="text-muted mb-0">
-              Seleccionar una sala, fecha y horario para realizar una reserva.
+            <p class="text-muted small mb-0">
+              Alta con curso, materia y netbooks (HU03).
             </p>
           </div>
         </a>
       </div>
 
-
-      <div class="col-12 col-md-6 col-lg-3">
+      <div class="col-12 col-sm-6 col-lg">
         <a routerLink="/dashboard/user/reservas" class="text-decoration-none">
-          <div class="card h-100 p-4 shadow-sm border-0 text-center">
-            <h2 class="h5 fw-bold text-primary mb-3">
-              Ver Reservas Confirmadas
+          <div class="card h-100 p-3 shadow-sm border-0 text-center hover-card">
+            <div class="fs-2 text-primary mb-2"><i class="bi bi-calendar-check"></i></div>
+            <h2 class="h6 fw-bold text-primary mb-2">
+              Reservas Confirmadas
             </h2>
-
-            <p class="text-muted mb-0">
-              Consultar las reservas confirmadas.
+            <p class="text-muted small mb-0">
+              Editar y cancelar reservas (HU04).
             </p>
           </div>
         </a>
       </div>
 
-
-      <div class="col-12 col-md-6 col-lg-3">
+      <div class="col-12 col-sm-6 col-lg">
         <a routerLink="/dashboard/user/historial" class="text-decoration-none">
-          <div class="card h-100 p-4 shadow-sm border-0 text-center">
-            <h2 class="h5 fw-bold text-primary mb-3">
-              Ver Historial de Reservas
+          <div class="card h-100 p-3 shadow-sm border-0 text-center hover-card">
+            <div class="fs-2 text-primary mb-2"><i class="bi bi-clock-history"></i></div>
+            <h2 class="h6 fw-bold text-primary mb-2">
+              Historial de Reservas
             </h2>
-
-            <p class="text-muted mb-0">
-              Visualizar reservas realizadas anteriormente.
+            <p class="text-muted small mb-0">
+              Registro histórico de ocupación (HU08).
             </p>
           </div>
         </a>

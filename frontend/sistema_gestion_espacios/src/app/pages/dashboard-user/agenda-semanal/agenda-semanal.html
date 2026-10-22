@@ -1,0 +1,293 @@
+<div class="agenda-container mb-5">
+
+  <!-- HEADER DE LA SECCIÓN -->
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+    <div>
+      <h2 class="fw-bold mb-1 text-primary">
+        <i class="bi bi-calendar3-week me-2"></i>Agenda Gráfica Semanal Unificada
+      </h2>
+      <p class="text-muted mb-0">
+        Visualización centralizada de ocupación horaria para los laboratorios escolares (07:00 a 18:00 hs).
+      </p>
+    </div>
+
+    <!-- NAVEGACIÓN DE SEMANAS -->
+    <div class="d-flex align-items-center gap-2 bg-white p-2 rounded-3 shadow-sm border">
+      <button
+        type="button"
+        class="btn btn-outline-secondary btn-sm"
+        (click)="semanaAnterior()"
+        title="Semana anterior"
+      >
+        <i class="bi bi-chevron-left"></i> Anterior
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-primary btn-sm px-3 fw-semibold"
+        (click)="semanaActual()"
+        title="Ir a la semana actual"
+      >
+        Hoy
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-outline-secondary btn-sm"
+        (click)="semanaSiguiente()"
+        title="Semana siguiente"
+      >
+        Siguiente <i class="bi bi-chevron-right"></i>
+      </button>
+
+      <span class="badge bg-light text-primary border border-primary-subtle fs-6 py-2 px-3 ms-2">
+        <i class="bi bi-calendar-event me-1"></i>{{ rangoSemanaLabel }}
+      </span>
+    </div>
+  </div>
+
+  <!-- SELECTOR DE LABORATORIO (VISTA UNIFICADA / POR SALA) -->
+  <div class="card border-0 shadow-sm mb-4 rounded-3 p-3 bg-white">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+      <div class="d-flex align-items-center gap-2">
+        <span class="fw-semibold text-dark small">
+          <i class="bi bi-funnel me-1 text-primary"></i>Visualizar Laboratorio:
+        </span>
+        <div class="btn-group" role="group">
+          <button
+            type="button"
+            class="btn btn-sm"
+            [class.btn-primary]="salaFiltro === 'todas'"
+            [class.btn-outline-primary]="salaFiltro !== 'todas'"
+            (click)="salaFiltro = 'todas'"
+          >
+            <i class="bi bi-grid-fill me-1"></i>Todos los Laboratorios (Unificada)
+          </button>
+          @for (lab of labs; track lab.id) {
+            <button
+              type="button"
+              class="btn btn-sm"
+              [class.btn-primary]="esSalaSeleccionada(lab.id!)"
+              [class.btn-outline-primary]="!esSalaSeleccionada(lab.id!)"
+              (click)="seleccionarSala(lab.id!)"
+            >
+              <i class="bi bi-door-open me-1"></i>{{ lab.nombre }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center gap-3 small">
+        <div class="d-flex align-items-center gap-1">
+          <span class="legend-box bg-success-subtle border border-success"></span>
+          <span class="text-muted">Horario Disponible</span>
+        </div>
+        <div class="d-flex align-items-center gap-1">
+          <span class="legend-box bg-danger-subtle border border-danger"></span>
+          <span class="text-muted">Laboratorio Ocupado</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando agenda...</span>
+      </div>
+      <div class="text-muted mt-2 small">Cargando disponibilidad y reservas de la semana...</div>
+    </div>
+  } @else {
+    <!-- GRILLA SEMANAL -->
+    @for (lab of labsFiltrados; track lab.id) {
+      <div class="card border-0 shadow-sm rounded-3 mb-4 overflow-hidden bg-white">
+        <div class="card-header bg-light border-bottom py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-primary fs-6 p-2 rounded-circle">
+              <i class="bi bi-pc-display"></i>
+            </span>
+            <div>
+              <h5 class="fw-bold mb-0 text-dark">{{ lab.nombre }}</h5>
+              <span class="text-muted small">
+                {{ lab.ciclo || 'Ciclo ProA' }} &bull; Capacidad: {{ lab.capacidad }} puestos
+              </span>
+            </div>
+          </div>
+
+          <a
+            routerLink="/dashboard/user/reservar"
+            [queryParams]="{ salaId: lab.id }"
+            class="btn btn-sm btn-outline-primary fw-semibold shadow-sm"
+          >
+            <i class="bi bi-plus-circle me-1"></i>Nueva Reserva en este Laboratorio
+          </a>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-bordered mb-0 align-middle agenda-table">
+            <thead>
+              <tr class="table-light text-center">
+                <th style="width: 110px;" class="py-3 text-muted">
+                  <i class="bi bi-clock me-1"></i>Horario
+                </th>
+                @for (dia of diasSemana; track dia.fecha) {
+                  <th class="py-2" [class.dia-hoy]="dia.esHoy">
+                    <div class="fw-bold text-dark">{{ dia.nombreDia }}</div>
+                    <div class="small" [class.badge]="dia.esHoy" [class.bg-primary]="dia.esHoy" [class.text-muted]="!dia.esHoy">
+                      {{ dia.numeroDia }}
+                    </div>
+                  </th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (bloque of bloquesHorarios; track bloque.horaInicio) {
+                <tr>
+                  <!-- COLUMNA HORARIO -->
+                  <td class="text-center bg-light fw-semibold small text-muted py-2">
+                    {{ bloque.label }} hs
+                  </td>
+
+                  <!-- CELDAS DE CADA DÍA -->
+                  @for (dia of diasSemana; track dia.fecha) {
+                    @let slot = getSlot(lab.id!, dia.fecha, bloque);
+
+                    <td class="p-1 cell-slot" [class.cell-hoy]="dia.esHoy">
+                      @if (slot.ocupado) {
+                        <!-- TARJETA DE SLOT OCUPADO -->
+                        <div class="slot-card occupied-card p-2 rounded-2 border border-danger-subtle position-relative">
+                          <div class="d-flex align-items-start justify-content-between gap-1">
+                            <span class="badge bg-danger p-1 small" style="font-size: 0.7rem;">
+                              <i class="bi bi-lock-fill me-1"></i>Ocupado
+                            </span>
+                            <button
+                              type="button"
+                              class="btn btn-sm btn-link p-0 text-danger text-decoration-none lh-1"
+                              (click)="verDetalleInfo(slot)"
+                              title="Ver información del docente que reservó"
+                            >
+                              <i class="bi bi-info-circle-fill fs-6"></i>
+                            </button>
+                          </div>
+
+                          <div class="slot-docente fw-bold text-dark small text-truncate mt-1" [title]="slot.docenteNombre">
+                            {{ slot.docenteNombre }}
+                          </div>
+
+                          @if (slot.reserva?.materia) {
+                            <div class="slot-materia text-danger fw-semibold small text-truncate" [title]="slot.reserva?.materia">
+                              {{ slot.reserva?.materia }}
+                            </div>
+                          }
+
+                          @if (slot.reserva?.curso) {
+                            <div class="text-muted small text-truncate" style="font-size: 0.72rem;">
+                              {{ slot.reserva?.curso }}
+                            </div>
+                          }
+
+                          @if (slot.reserva?.netbooks && slot.reserva!.netbooks! > 0) {
+                            <div class="badge bg-secondary-subtle text-secondary small p-1 mt-1" style="font-size: 0.68rem;">
+                              <i class="bi bi-laptop me-1"></i>{{ slot.reserva?.netbooks }} netbooks
+                            </div>
+                          }
+                        </div>
+                      } @else {
+                        <!-- TARJETA DE SLOT LIBRE -->
+                        <div
+                          class="slot-card free-card p-2 rounded-2 border border-success-subtle text-center"
+                          (click)="reservarSlot(slot)"
+                          title="Clic para reservar en este horario"
+                        >
+                          <span class="text-success small fw-semibold d-block">
+                            <i class="bi bi-plus-lg me-1"></i>Disponible
+                          </span>
+                          <span class="btn-reservar-link text-primary small d-none d-md-inline" style="font-size: 0.72rem;">
+                            Reservar
+                          </span>
+                        </div>
+                      }
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+  }
+
+</div>
+
+<!-- MODAL DE INFORMACIÓN DETALLADA DE LA RESERVA -->
+@if (reservaModalInfo) {
+  <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5); z-index: 1050;" (click)="cerrarModalInfo()">
+    <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
+      <div class="modal-content shadow border-0">
+        <div class="modal-header bg-danger text-white py-3">
+          <h6 class="modal-title fw-bold mb-0">
+            <i class="bi bi-info-circle-fill me-2"></i>Detalle de la Reserva en Agenda
+          </h6>
+          <button type="button" class="btn-close btn-close-white" (click)="cerrarModalInfo()"></button>
+        </div>
+        <div class="modal-body p-4">
+          <div class="d-flex align-items-center mb-3">
+            <div class="avatar-circle bg-danger-subtle text-danger fw-bold rounded-circle me-3 fs-3 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
+              <i class="bi bi-person-fill"></i>
+            </div>
+            <div>
+              <div class="text-muted small">Docente responsable:</div>
+              <div class="fw-bold fs-5 text-dark">{{ reservaModalInfo.docenteNombre }}</div>
+              @if (reservaModalInfo.docenteEmail) {
+                <div class="text-muted small"><i class="bi bi-envelope me-1"></i>{{ reservaModalInfo.docenteEmail }}</div>
+              }
+            </div>
+          </div>
+
+          <div class="p-3 bg-light rounded-3 border">
+            <div class="row g-2 small">
+              <div class="col-6">
+                <span class="text-muted d-block">Laboratorio:</span>
+                <strong class="text-dark">{{ reservaModalInfo.salaNombre }}</strong>
+              </div>
+              <div class="col-6">
+                <span class="text-muted d-block">Fecha:</span>
+                <strong class="text-dark">{{ reservaModalInfo.fecha }}</strong>
+              </div>
+              <div class="col-6">
+                <span class="text-muted d-block">Horario ocupado:</span>
+                <strong class="text-danger fs-6"><i class="bi bi-clock me-1"></i>{{ reservaModalInfo.horaInicio }} a {{ reservaModalInfo.horaFin }} hs</strong>
+              </div>
+              <div class="col-6">
+                <span class="text-muted d-block">Estado:</span>
+                <span class="badge bg-danger">Ocupado / Confirmada</span>
+              </div>
+              @if (reservaModalInfo.reserva?.materia) {
+                <div class="col-6">
+                  <span class="text-muted d-block">Materia:</span>
+                  <strong class="text-dark">{{ reservaModalInfo.reserva?.materia }}</strong>
+                </div>
+              }
+              @if (reservaModalInfo.reserva?.curso) {
+                <div class="col-6">
+                  <span class="text-muted d-block">Curso:</span>
+                  <strong class="text-dark">{{ reservaModalInfo.reserva?.curso }}</strong>
+                </div>
+              }
+              @if (reservaModalInfo.reserva?.netbooks) {
+                <div class="col-12">
+                  <span class="text-muted d-block">Netbooks solicitadas:</span>
+                  <span class="badge bg-primary">{{ reservaModalInfo.reserva?.netbooks }} unidades</span>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer py-2 bg-light">
+          <button type="button" class="btn btn-sm btn-secondary" (click)="cerrarModalInfo()">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

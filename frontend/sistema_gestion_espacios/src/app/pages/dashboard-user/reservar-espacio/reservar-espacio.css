@@ -1,24 +1,41 @@
 .section-header {
-  margin-bottom: 30px;
+  margin-bottom: 25px;
 }
 
 .section-header h2 {
-  color: #2c3e50;
-  margin-bottom: 10px;
+  color: #1e293b;
 }
 
 .section-header p {
-  color: #666;
+  color: #64748b;
 }
 
 form {
   background: #ffffff;
-  padding: 35px;
-  border-radius: 12px;
+  padding: 30px;
+  border-radius: 14px;
+}
+
+.disponibilidad-container {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease-in-out;
+}
+
+.badge-slot {
+  font-size: 0.85rem;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: all 0.15s ease-in-out;
+}
+
+.badge-slot:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .form-control:focus,
 .form-select:focus {
-  border-color: #3498db;
-  box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
 }

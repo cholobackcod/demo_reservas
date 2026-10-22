@@ -80,15 +80,15 @@ export class Reservas implements OnInit {
 
   cancelarReserva(id?: number | string): void {
     if (!id) return;
-    if (confirm('¿Desea cancelar/eliminar esta reserva?')) {
+    if (confirm('¿Desea cancelar esta reserva?')) {
       this.reservationService.deleteReservation(id).subscribe({
         next: () => {
-          alert('Reserva eliminada correctamente.');
+          alert('Reserva cancelada correctamente.');
           this.cargarReservas();
         },
         error: (err) => {
-          console.error('Error al eliminar reserva:', err);
-          alert('No se pudo eliminar la reserva.');
+          console.error('Error al cancelar reserva:', err);
+          alert('No se pudo cancelar la reserva.');
         }
       });
     }

@@ -1,180 +1,387 @@
 
 <div class="section-header">
-  <h2>Reservar laboratorio</h2>
-
-  <p>
-    Seleccioná un laboratorio, fecha y horario para realizar una reserva.
-  </p>
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <div>
+      <h2 class="fw-bold mb-1"><i class="bi bi-calendar-plus me-2 text-primary"></i>Reservar Laboratorio</h2>
+      <p class="text-muted mb-0">
+        Completá los datos para registrar la reserva según disponibilidad horaria.
+      </p>
+    </div>
+  </div>
 </div>
-
 
 <form
   [formGroup]="reservaForm"
   (ngSubmit)="confirmarReserva()"
+  class="shadow-sm border rounded-3 p-4 bg-white"
 >
 
-  <!-- LABORATORIO -->
-  <div class="mb-4">
-
-    <label
-      for="sala"
-      class="form-label fw-semibold"
-    >
-      Seleccionar laboratorio
-    </label>
-
-    <select
-      id="sala"
-      class="form-select"
-      formControlName="sala"
-    >
-      <option value="">
-        Elegir laboratorio disponible...
-      </option>
-      @for (lab of salas; track lab.id) {
-        <option [value]="lab.id">
-          {{ lab.nombre }} (Capacidad: {{ lab.capacidad }})
-        </option>
+  <!-- PASO 1: SELECCIONA LABORATORIO Y FECHA -->
+  <div class="row g-3 mb-4">
+    <!-- LABORATORIO -->
+    <div class="col-12 col-md-6">
+      <label for="sala" class="form-label fw-semibold">
+        <i class="bi bi-door-open me-1 text-primary"></i>1. Seleccionar Laboratorio
+      </label>
+      <select
+        id="sala"
+        class="form-select"
+        formControlName="sala"
+      >
+        <option value="">Elegir laboratorio...</option>
+        @for (lab of salas; track lab.id) {
+          <option [value]="lab.id">
+            {{ lab.nombre }} (Capacidad: {{ lab.capacidad }} personas)
+          </option>
+        }
+      </select>
+      @if (campoInvalido('sala')) {
+        <div class="text-danger small mt-1">
+          Debés seleccionar un laboratorio.
+        </div>
       }
-    </select>
-
-    @if (campoInvalido('sala')) {
-      <div class="text-danger mt-2">
-        Debés seleccionar un laboratorio.
-      </div>
-    }
-
-  </div>
-
-
-  <!-- FECHA Y HORA DESDE -->
-  <div class="mb-4">
-
-    <div class="input-group">
-
-      <div class="flex-grow-1">
-
-        <label
-          for="fechaDesde"
-          class="form-label fw-semibold"
-        >
-          Fecha desde
-        </label>
-
-        <input
-          id="fechaDesde"
-          type="date"
-          class="form-control"
-          formControlName="fechaDesde"
-        >
-
-      </div>
-
-
-      <div class="flex-grow-1">
-
-        <label
-          for="horaDesde"
-          class="form-label fw-semibold"
-        >
-          Hora desde
-        </label>
-
-        <input
-          id="horaDesde"
-          type="time"
-          class="form-control"
-          formControlName="horaDesde"
-        >
-
-      </div>
-
     </div>
 
-    @if (
-      campoInvalido('fechaDesde') ||
-      campoInvalido('horaDesde')
-    ) {
-
-      <div class="text-danger mt-2">
-        La fecha y hora de inicio son obligatorias.
-      </div>
-
-    }
-
+    <!-- FECHA -->
+    <div class="col-12 col-md-6">
+      <label for="fechaDesde" class="form-label fw-semibold">
+        <i class="bi bi-calendar-event me-1 text-primary"></i>Fecha de Reserva
+      </label>
+      <input
+        id="fechaDesde"
+        type="date"
+        class="form-control"
+        formControlName="fechaDesde"
+        [min]="hoyFecha"
+      >
+      @if (campoInvalido('fechaDesde')) {
+        <div class="text-danger small mt-1">
+          La fecha de reserva es obligatoria.
+        </div>
+      }
+    </div>
   </div>
 
-
-  <!-- FECHA Y HORA HASTA -->
-  <div class="mb-4">
-
-    <div class="input-group">
-
-      <div class="flex-grow-1">
-
-        <label
-          for="fechaHasta"
-          class="form-label fw-semibold"
-        >
-          Fecha hasta
-        </label>
-
-        <input
-          id="fechaHasta"
-          type="date"
-          class="form-control"
-          formControlName="fechaHasta"
-        >
-
-      </div>
-
-
-      <div class="flex-grow-1">
-
-        <label
-          for="horaHasta"
-          class="form-label fw-semibold"
-        >
-          Hora hasta
-        </label>
-
-        <input
-          id="horaHasta"
-          type="time"
-          class="form-control"
-          formControlName="horaHasta"
-        >
-
-      </div>
-
+  <!-- PASO 8: MUESTRA HORARIOS DISPONIBLES (Consulta de disponibilidad del laboratorio) -->
+  <div class="disponibilidad-container mb-4 p-3 rounded-3 border bg-light">
+    <div class="d-flex align-items-center justify-content-between mb-2">
+      <h6 class="fw-bold text-dark mb-0">
+        <i class="bi bi-clock-history me-1 text-info"></i>Disponibilidad del Laboratorio
+      </h6>
+      @if (consultandoDisponibilidad) {
+        <span class="badge bg-secondary">
+          <span class="spinner-border spinner-border-sm me-1" role="status"></span>Consultando disponibilidad...
+        </span>
+      }
     </div>
 
-    @if (
-      campoInvalido('fechaHasta') ||
-      campoInvalido('horaHasta')
-    ) {
+    @if (!reservaForm.get('sala')?.value) {
+      <p class="text-muted small mb-0">
+        <i class="bi bi-info-circle me-1"></i>Seleccioná un laboratorio y fecha para ver los horarios disponibles y reservas confirmadas en tiempo real.
+      </p>
+    } @else if (disponibilidadConsultada) {
+      <div class="row g-2 mt-1">
+        <!-- HORARIOS DISPONIBLES -->
+        <div class="col-12 col-md-7">
+          <div class="small fw-semibold text-success mb-2">
+            <i class="bi bi-check-circle-fill me-1"></i>Horarios Disponibles (07:00 a 18:00 hs):
+          </div>
+          @if (franjasDisponibles.length > 0) {
+            <div class="d-flex flex-wrap gap-2">
+              @for (franja of franjasDisponibles; track franja.inicio) {
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-success badge-slot text-start"
+                  (click)="seleccionarFranja(franja)"
+                  title="Clic para seleccionar esta franja horaria"
+                >
+                  <i class="bi bi-clock me-1"></i>{{ franja.inicio }} a {{ franja.fin }} hs
+                </button>
+              }
+            </div>
+          } @else {
+            <div class="badge bg-danger p-2 text-wrap">
+              No hay horarios disponibles en esta fecha.
+            </div>
+          }
+        </div>
 
-      <div class="text-danger mt-2">
-        La fecha y hora de finalización son obligatorias.
+        <!-- HORARIOS YA RESERVADOS -->
+        <div class="col-12 col-md-5">
+          <div class="small fw-semibold text-danger mb-2">
+            <i class="bi bi-lock-fill me-1"></i>Reservas Confirmadas:
+          </div>
+          @if (horariosOcupados.length > 0) {
+            <ul class="list-unstyled mb-0 small">
+              @for (oc of horariosOcupados; track oc.id) {
+                <li class="badge bg-danger-subtle text-danger border border-danger-subtle me-1 mb-1 p-2 d-inline-flex align-items-center gap-1">
+                  <i class="bi bi-slash-circle me-1"></i>
+                  <span>{{ oc.inicio }} - {{ oc.fin }} hs (Ocupado)</span>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-link p-0 ms-1 text-danger text-decoration-none lh-1"
+                    (click)="mostrarDetalle(oc); $event.stopPropagation()"
+                    [title]="'Más información: Reservado por ' + (oc.usuarioNombre || 'Docente') + (oc.usuarioEmail ? ' (' + oc.usuarioEmail + ')' : '')"
+                    aria-label="Más información sobre quién reservó este horario"
+                  >
+                    <i class="bi bi-info-circle-fill fs-6" style="cursor: pointer;"></i>
+                  </button>
+                </li>
+              }
+            </ul>
+          } @else {
+            <span class="badge bg-success-subtle text-success border border-success-subtle p-2">
+              <i class="bi bi-check-lg me-1"></i>Sin reservas en esta fecha
+            </span>
+          }
+        </div>
       </div>
-
     }
-
   </div>
 
+  <!-- HORARIOS DESDE Y HASTA -->
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-md-6">
+      <label for="horaDesde" class="form-label fw-semibold">
+        <i class="bi bi-hourglass-top me-1 text-primary"></i>Hora de Inicio (07:00 a 18:00 hs)
+      </label>
+      <input
+        id="horaDesde"
+        type="time"
+        min="07:00"
+        max="18:00"
+        class="form-control"
+        formControlName="horaDesde"
+      >
+      @if (campoInvalido('horaDesde')) {
+        <div class="text-danger small mt-1">
+          La hora de inicio es obligatoria (entre 07:00 y 18:00 hs).
+        </div>
+      }
+    </div>
 
-  @if (errorMessage) {
-    <div class="alert alert-danger py-2 mb-4 text-start shadow-sm" role="alert">
-      <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ errorMessage }}
+    <div class="col-12 col-md-6">
+      <label for="horaHasta" class="form-label fw-semibold">
+        <i class="bi bi-hourglass-bottom me-1 text-primary"></i>Hora de Fin (07:00 a 18:00 hs)
+      </label>
+      <input
+        id="horaHasta"
+        type="time"
+        min="07:00"
+        max="18:00"
+        class="form-control"
+        formControlName="horaHasta"
+      >
+      @if (campoInvalido('horaHasta')) {
+        <div class="text-danger small mt-1">
+          La hora de finalización es obligatoria (entre 07:00 y 18:00 hs).
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- HU03: CAMPOS CURSO, MATERIA Y NETBOOKS -->
+  <div class="row g-3 mb-4">
+    <!-- CURSO -->
+    <div class="col-12 col-md-4">
+      <label for="curso" class="form-label fw-semibold">
+        <i class="bi bi-mortarboard me-1 text-primary"></i>Curso / Año
+      </label>
+      <select id="curso" class="form-select" formControlName="curso">
+        <option value="">Seleccionar curso...</option>
+        @for (c of cursosDisponibles; track c) {
+          <option [value]="c">{{ c }}</option>
+        }
+      </select>
+      @if (campoInvalido('curso')) {
+        <div class="text-danger small mt-1">El curso es obligatorio.</div>
+      }
+    </div>
+
+    <!-- MATERIA -->
+    <div class="col-12 col-md-5">
+      <label for="materia" class="form-label fw-semibold">
+        <i class="bi bi-journal-bookmark me-1 text-primary"></i>Materia / Asignatura
+      </label>
+      <select id="materia" class="form-select" formControlName="materia">
+        <option value="">Seleccionar materia...</option>
+        @for (m of materiasDisponibles; track m) {
+          <option [value]="m">{{ m }}</option>
+        }
+      </select>
+      @if (campoInvalido('materia')) {
+        <div class="text-danger small mt-1">La materia es obligatoria.</div>
+      }
+      <div class="text-muted small mt-1">
+        <i class="bi bi-info-circle me-1"></i>Tope: máx 3 reservas semanales por materia (HU05).
+      </div>
+    </div>
+
+    <!-- NETBOOKS -->
+    <div class="col-12 col-md-3">
+      <label for="netbooks" class="form-label fw-semibold">
+        <i class="bi bi-laptop me-1 text-primary"></i>Netbooks solicitadas
+      </label>
+      <input
+        id="netbooks"
+        type="number"
+        min="0"
+        max="45"
+        class="form-control"
+        formControlName="netbooks"
+        placeholder="Ej: 25"
+      >
+      @if (campoInvalido('netbooks')) {
+        <div class="text-danger small mt-1">Cantidad entre 0 y 45.</div>
+      }
+    </div>
+  </div>
+
+  <!-- RAMAS Y ALERTAS DEL DIAGRAMA DE SECUENCIA -->
+
+  <!-- PASO 26: alt [Existe solapamiento horario] -> Alerta: Laboratorio ya reservado -->
+  @if (alertaLaboratorioReservado) {
+    <div class="alert alert-warning py-3 mb-4 shadow-sm border-warning" role="alert">
+      <div class="d-flex align-items-center">
+        <i class="bi bi-exclamation-triangle-fill fs-3 me-3 text-warning"></i>
+        <div>
+          <h6 class="fw-bold mb-1">Alerta: Laboratorio ya reservado</h6>
+          <div class="small">{{ errorMessage }}</div>
+        </div>
+      </div>
     </div>
   }
 
-  <!-- BOTÓN -->
+  <!-- PASO 21: alt [fin <= inicio] -> Error de rango horario -->
+  @if (errorRangoHorario) {
+    <div class="alert alert-danger py-3 mb-4 shadow-sm border-danger" role="alert">
+      <div class="d-flex align-items-center">
+        <i class="bi bi-clock-history fs-3 me-3 text-danger"></i>
+        <div>
+          <h6 class="fw-bold mb-1">Error de rango horario</h6>
+          <div class="small">{{ errorMessage }}</div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- PASO 17: alt [usuarioId o salaId inexistente] -> Mensaje de error en formulario -->
+  @if (errorFormulario) {
+    <div class="alert alert-danger py-3 mb-4 shadow-sm border-danger" role="alert">
+      <div class="d-flex align-items-center">
+        <i class="bi bi-exclamation-circle-fill fs-3 me-3 text-danger"></i>
+        <div>
+          <h6 class="fw-bold mb-1">Mensaje de error en formulario</h6>
+          <div class="small">{{ errorMessage }}</div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- PASO 35: alt [Solapamiento tardío o error al guardar] -> Error interno del servidor -->
+  @if (errorServidor) {
+    <div class="alert alert-danger py-3 mb-4 shadow-sm border-danger" role="alert">
+      <div class="d-flex align-items-center">
+        <i class="bi bi-x-octagon-fill fs-3 me-3 text-danger"></i>
+        <div>
+          <h6 class="fw-bold mb-1">Error interno del servidor</h6>
+          <div class="small">{{ errorMessage }}</div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- PASO 41: Notificación de éxito y redirección -->
+  @if (successMessage) {
+    <div class="alert alert-success py-3 mb-4 shadow-sm border-success" role="alert">
+      <div class="d-flex align-items-center">
+        <i class="bi bi-check-circle-fill fs-3 me-3 text-success"></i>
+        <div>
+          <h6 class="fw-bold mb-1">Notificación de éxito</h6>
+          <div class="small">{{ successMessage }}</div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- PASO 9: BOTÓN "Confirmar Reserva" -->
   <button
+    id="btn-confirmar-reserva"
     type="submit"
-    class="btn btn-primary w-100 py-2 fw-bold"
+    class="btn btn-primary w-100 py-3 fw-bold fs-6 shadow-sm d-flex align-items-center justify-content-center gap-2"
+    [disabled]="enviando"
   >
-    Confirmar reserva
+    @if (enviando) {
+      <span class="spinner-border spinner-border-sm" role="status"></span>
+      <span>Procesando reserva...</span>
+    } @else {
+      <i class="bi bi-calendar-check-fill"></i>
+      <span>Confirmar Reserva</span>
+    }
   </button>
 
 </form>
+
+<!-- MODAL DE MÁS INFORMACIÓN DE RESERVA -->
+@if (reservaSeleccionada) {
+  <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5); z-index: 1050;" (click)="cerrarDetalle()">
+    <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
+      <div class="modal-content shadow border-0">
+        <div class="modal-header bg-danger text-white py-2">
+          <h6 class="modal-title fw-bold mb-0">
+            <i class="bi bi-info-circle-fill me-2"></i>Información de la Reserva
+          </h6>
+          <button type="button" class="btn-close btn-close-white" (click)="cerrarDetalle()"></button>
+        </div>
+        <div class="modal-body p-4">
+          <div class="d-flex align-items-center mb-3">
+            <div class="avatar-circle bg-danger-subtle text-danger fw-bold rounded-circle me-3 fs-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+              <i class="bi bi-person-fill"></i>
+            </div>
+            <div>
+              <div class="text-muted small">Docente que reservó:</div>
+              <div class="fw-bold fs-5 text-dark">{{ reservaSeleccionada.usuarioNombre }}</div>
+              @if (reservaSeleccionada.usuarioEmail) {
+                <div class="text-muted small"><i class="bi bi-envelope me-1"></i>{{ reservaSeleccionada.usuarioEmail }}</div>
+              }
+            </div>
+          </div>
+          <div class="p-3 bg-light rounded-3 border">
+            <div class="row g-2 small">
+              <div class="col-6">
+                <span class="text-muted d-block">Horario reservado:</span>
+                <strong class="text-danger fs-6"><i class="bi bi-clock me-1"></i>{{ reservaSeleccionada.inicio }} a {{ reservaSeleccionada.fin }} hs</strong>
+              </div>
+              <div class="col-6">
+                <span class="text-muted d-block">Estado de reserva:</span>
+                <span class="badge bg-danger">Ocupado / Confirmada</span>
+              </div>
+              @if (reservaSeleccionada.materia) {
+                <div class="col-6">
+                  <span class="text-muted d-block">Materia:</span>
+                  <strong class="text-dark">{{ reservaSeleccionada.materia }}</strong>
+                </div>
+              }
+              @if (reservaSeleccionada.curso) {
+                <div class="col-6">
+                  <span class="text-muted d-block">Curso:</span>
+                  <strong class="text-dark">{{ reservaSeleccionada.curso }}</strong>
+                </div>
+              }
+              @if (reservaSeleccionada.netbooks) {
+                <div class="col-12">
+                  <span class="text-muted d-block">Netbooks solicitadas:</span>
+                  <span class="badge bg-primary">{{ reservaSeleccionada.netbooks }} unidades</span>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer py-2">
+          <button type="button" class="btn btn-sm btn-secondary" (click)="cerrarDetalle()">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+

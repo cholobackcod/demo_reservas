@@ -96,6 +96,9 @@ def seed():
             'sala': s1,
             'inicio': now + datetime.timedelta(days=1, hours=2),
             'fin': now + datetime.timedelta(days=1, hours=4),
+            'curso': '4° Año Informática',
+            'materia': 'Programación',
+            'netbooks': 25,
             'estado': 'confirmada'
         }
     )
@@ -106,6 +109,9 @@ def seed():
             'sala': s2,
             'inicio': now + datetime.timedelta(days=2, hours=3),
             'fin': now + datetime.timedelta(days=2, hours=5),
+            'curso': '5° Año Informática',
+            'materia': 'Redes y Telecomunicaciones',
+            'netbooks': 20,
             'estado': 'confirmada'
         }
     )

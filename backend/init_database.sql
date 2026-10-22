@@ -1,4 +1,4 @@
-reservas_reserva-- ============================================================
+-- ============================================================
 -- SCRIPT DE CREACIÓN Y POBLADO DE BASE DE DATOS RELACIONAL
 -- Proyecto: Sistema de Gestión de Espacios (Syntax Error)
 -- Compatible con MySQL / MariaDB
@@ -41,6 +41,9 @@ CREATE TABLE IF NOT EXISTS reservas_reserva (
     sala_id INT NOT NULL,
     inicio DATETIME NOT NULL,
     fin DATETIME NOT NULL,
+    curso VARCHAR(50) NOT NULL DEFAULT '',
+    materia VARCHAR(100) NOT NULL DEFAULT '',
+    netbooks INT UNSIGNED NOT NULL DEFAULT 0,
     estado VARCHAR(20) NOT NULL DEFAULT 'confirmada',
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_reserva_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios_usuario(id) ON DELETE CASCADE,
@@ -54,6 +57,7 @@ CREATE INDEX idx_usuarios_email ON usuarios_usuario(email);
 CREATE INDEX idx_reservas_usuario ON reservas_reserva(usuario_id);
 CREATE INDEX idx_reservas_sala ON reservas_reserva(sala_id);
 CREATE INDEX idx_reservas_fechas ON reservas_reserva(inicio, fin);
+CREATE INDEX idx_reservas_materia ON reservas_reserva(materia);
 
 -- ============================================================
 -- DATOS INICIALES (DML)
@@ -67,12 +71,12 @@ INSERT INTO usuarios_usuario (id, nombre, apellido, email, password, rol, activo
 ON DUPLICATE KEY UPDATE email=VALUES(email);
 
 INSERT INTO salas_sala (id, nombre, ciclo, descripcion, capacidad, activa) VALUES
-(1, 'Laboratorio Informática A', 'Ciclo Básico', 'Laboratorio equipado con 35 PCs para prácticas de programación.', 35, TRUE),
-(2, 'Laboratorio Redes y Hardware B', 'Ciclo Superior', 'Espacio equipado para ensamblado de redes y mantenimiento.', 25, TRUE),
-(3, 'Laboratorio Desarrollo Software C', 'Ciclo Superior', 'Laboratorio avanzado para desarrollo web y sistemas distribuidos.', 30, TRUE)
+(1, 'Laboratorio', 'Ciclo Básico', 'Laboratorio equipado con 35 PCs para prácticas de programación.', 35, TRUE),
+(2, 'Sala de informatica', 'Ciclo Orientado', 'Espacio equipado para ensamblado de redes y mantenimiento.', 25, TRUE)
 ON DUPLICATE KEY UPDATE nombre=VALUES(nombre);
 
-INSERT INTO reservas_reserva (id, usuario_id, sala_id, inicio, fin, estado) VALUES
-(1, 2, 1, '2026-10-15 09:00:00', '2026-10-15 11:00:00', 'confirmada'),
-(2, 3, 2, '2026-10-16 14:00:00', '2026-10-16 17:00:00', 'confirmada')
+INSERT INTO reservas_reserva (id, usuario_id, sala_id, inicio, fin, curso, materia, netbooks, estado) VALUES
+(1, 2, 1, '2026-10-15 09:00:00', '2026-10-15 11:00:00', '4° Año Informática', 'Programación', 25, 'confirmada'),
+(2, 3, 2, '2026-10-16 14:00:00', '2026-10-16 17:00:00', '5° Año Informática', 'Redes y Telecomunicaciones', 20, 'confirmada')
 ON DUPLICATE KEY UPDATE estado=VALUES(estado);
+

@@ -50,8 +50,8 @@
               <li><a class="dropdown-item" (click)="cambiarEstado(reserva.id, 'cancelada')">Cancelada</a></li>
             </ul>
           </div>
-          <button class="btn btn-danger btn-sm" (click)="cancelarReserva(reserva.id)">
-            Eliminar
+          <button class="btn btn-danger btn-sm" [disabled]="reserva.estado === 'cancelada'" (click)="cancelarReserva(reserva.id)">
+            {{ reserva.estado === 'cancelada' ? 'Cancelada' : 'Cancelar' }}
           </button>
         </td>
       </tr>
