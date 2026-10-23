@@ -123,11 +123,11 @@ def seed():
         usuarios_dict[email] = u
     print(f"[OK] {len(usuarios_dict)} usuarios registrados.")
 
-    # 5. Salas de Laboratorio
+    # 5. Salas de Laboratorio (Los dos laboratorios oficiales)
     s1, _ = Sala.objects.get_or_create(
         id=1,
         defaults={
-            'nombre': 'Laboratorio Informática A',
+            'nombre': 'Laboratorio',
             'ciclo': 'Ciclo Básico',
             'descripcion': 'Laboratorio equipado con 35 PCs para prácticas de programación.',
             'capacidad': 35,
@@ -137,24 +137,14 @@ def seed():
     s2, _ = Sala.objects.get_or_create(
         id=2,
         defaults={
-            'nombre': 'Laboratorio Redes y Hardware B',
-            'ciclo': 'Ciclo Superior',
+            'nombre': 'Sala de informatica',
+            'ciclo': 'Ciclo Orientado',
             'descripcion': 'Espacio equipado para ensamblado de redes y mantenimiento.',
             'capacidad': 25,
             'activa': True
         }
     )
-    s3, _ = Sala.objects.get_or_create(
-        id=3,
-        defaults={
-            'nombre': 'Laboratorio Desarrollo Software C',
-            'ciclo': 'Ciclo Superior',
-            'descripcion': 'Laboratorio avanzado para desarrollo web y sistemas distribuidos.',
-            'capacidad': 30,
-            'activa': True
-        }
-    )
-    print("[OK] Salas de laboratorio registradas.")
+    print("[OK] 2 salas de laboratorio registradas.")
 
     # 6. Asignaciones Docentes y Horarios Reales (extraídos de la Planilla Oficial ProA Sede Capital Norte)
     docente_bianchi = usuarios_dict['andres@demo.com']
