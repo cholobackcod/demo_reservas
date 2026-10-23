@@ -90,7 +90,7 @@ class ReservaSerializer(serializers.ModelSerializer):
                         "non_field_errors": [mensaje_fuera_horario]
                     })
 
-                # HU05: Validación automática de topes semanales de reserva por materia (máx 3 reservas por semana)
+                # Validación automática de topes semanales de reserva por materia (máx 3 reservas por semana)
                 if materia and str(materia).strip():
                     lunes = inicio_local.date() - datetime.timedelta(days=inicio_local.date().weekday())
                     domingo = lunes + datetime.timedelta(days=6)
@@ -113,6 +113,29 @@ class ReservaSerializer(serializers.ModelSerializer):
                             "materia": mensaje_tope,
                             "non_field_errors": [mensaje_tope]
                         })
+
+                # Validación de Asignación Docente: Un docente sólo puede reservar en materias y cursos asignados
+                usuario_reserva = data.get('usuario', getattr(self.instance, 'usuario', None))
+                curso_reserva = data.get('curso', getattr(self.instance, 'curso', ''))
+                if usuario_reserva and usuario_reserva.rol == 'docente' and materia and str(materia).strip():
+                    from docentes.models import AsignacionDocente
+                    asignaciones_doc = AsignacionDocente.objects.filter(docente=usuario_reserva)
+                    if asignaciones_doc.exists():
+                        match_mat = asignaciones_doc.filter(materia__nombre__iexact=str(materia).strip())
+                        if not match_mat.exists():
+                            msg_mat = f"El docente no tiene asignada la materia '{materia}'. Solo puede reservar en espacios curriculares asignados."
+                            raise serializers.ValidationError({
+                                "materia": msg_mat,
+                                "non_field_errors": [msg_mat]
+                            })
+                        if curso_reserva and str(curso_reserva).strip():
+                            match_cur = match_mat.filter(curso__nombre__iexact=str(curso_reserva).strip())
+                            if not match_cur.exists():
+                                msg_cur = f"El docente no tiene asignado el curso '{curso_reserva}' para la materia '{materia}'."
+                                raise serializers.ValidationError({
+                                    "curso": msg_cur,
+                                    "non_field_errors": [msg_cur]
+                                })
 
                 # Paso 22: SELECT reservas confirmadas solapadas (sala, inicio, fin)
                 if sala:

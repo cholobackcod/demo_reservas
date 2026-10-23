@@ -1,16 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
-
-import { Nav } from '../../shared/nav/nav';
-import { Footer } from '../../shared/footer/footer';
+import { CommonModule } from '@angular/common';
+import { AuthService, User } from '../../services/auth';
 
 @Component({
   selector: 'app-dashboard-user',
-  imports: [
-    RouterLink,
-    RouterOutlet
-],
+  standalone: true,
+  imports: [RouterLink, RouterOutlet, CommonModule],
   templateUrl: './dashboard-user.html',
   styleUrl: './dashboard-user.css',
 })
-export class DashboardUser {}
+export class DashboardUser {
+  private authService = inject(AuthService);
+
+  get currentUser(): User | null {
+    return this.authService.getCurrentUser();
+  }
+}

@@ -1,5 +1,5 @@
 <header class="bg-white shadow-sm border-top border-info border-4 sticky-top">
-  <!-- MODO OFFLINE / SINCRONIZACIÓN LOCALSTORAGE (HU06) -->
+  <!-- MODO OFFLINE / SINCRONIZACIÓN LOCALSTORAGE -->
   @if (isOffline) {
     <div class="bg-warning text-dark py-2 px-3 text-center small fw-semibold border-bottom border-warning d-flex align-items-center justify-content-center gap-2">
       <i class="bi bi-wifi-off fs-6"></i>
@@ -46,7 +46,28 @@
           </li>
 
           @if (currentUser) {
+            @if (currentUser.rol === 'admin') {
+              <li class="nav-item">
+                <a
+                  class="nav-link text-secondary fw-semibold px-3 rounded-pill hover-bg-light"
+                  routerLink="/dashboard/admin/docentes"
+                  routerLinkActive="active text-info fw-bold"
+                >
+                  <i class="bi bi-person-badge me-1"></i> Docentes
+                </a>
+              </li>
+            }
+
             @if (currentUser.rol === 'docente') {
+              <li class="nav-item">
+                <a
+                  class="nav-link text-secondary fw-semibold px-3 rounded-pill hover-bg-light"
+                  routerLink="/dashboard/user/horario"
+                  routerLinkActive="active text-info fw-bold"
+                >
+                  <i class="bi bi-clock-history me-1"></i> Mi Horario
+                </a>
+              </li>
               <li class="nav-item">
                 <a
                   class="nav-link text-secondary fw-semibold px-3 rounded-pill hover-bg-light"

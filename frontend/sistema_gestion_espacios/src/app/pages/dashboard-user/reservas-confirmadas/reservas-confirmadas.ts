@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ReservationService, Reservation } from '../../../services/reservation';
 import { LabsService, Lab } from '../../../services/labs';
 import { AuthService } from '../../../services/auth';
+import { DocentesService } from '../../../services/docentes';
 import { forkJoin } from 'rxjs';
 
 export interface ReservaDisplay {
@@ -32,6 +33,7 @@ export class ReservasConfirmadas implements OnInit {
   private reservationService = inject(ReservationService);
   private labsService = inject(LabsService);
   private authService = inject(AuthService);
+  private docentesService = inject(DocentesService);
   private fb = inject(FormBuilder);
   private cdr = inject(ChangeDetectorRef);
 
@@ -39,12 +41,18 @@ export class ReservasConfirmadas implements OnInit {
   labs: Lab[] = [];
   loading = true;
 
-  // HU04: Modal de edición de reservas propias
+  // Modal de edición de reservas propias
   reservaEnEdicion: ReservaDisplay | null = null;
   editForm!: FormGroup;
   guardandoEdicion = false;
   errorEdicion = '';
   exitoMensaje = '';
+
+  // Asignaciones docentes institucionales
+  esDocente = false;
+  tieneAsignaciones = false;
+  todasLasAsignacionesDocente: any[] = [];
+  cursosFiltradosPorMateria: string[] = [];
 
   cursosDisponibles: string[] = [
     '1° Año A',
@@ -92,7 +100,48 @@ export class ReservasConfirmadas implements OnInit {
       netbooks: [0, [Validators.required, Validators.min(0), Validators.max(45)]]
     });
 
+    const currentUser = this.authService.getCurrentUser();
+    if (currentUser && currentUser.rol === 'docente' && currentUser.id) {
+      this.esDocente = true;
+      this.docentesService.getMateriasDocente(Number(currentUser.id)).subscribe({
+        next: (data) => {
+          if (data && data.materias && data.materias.length > 0) {
+            this.tieneAsignaciones = true;
+            this.todasLasAsignacionesDocente = data.asignaciones || [];
+            this.materiasDisponibles = data.materias.map(m => m.nombre);
+            this.cursosDisponibles = data.cursos.map(c => c.nombre);
+          } else {
+            this.tieneAsignaciones = false;
+          }
+          this.actualizarCursosPorMateria(this.editForm.get('materia')?.value);
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.actualizarCursosPorMateria(this.editForm.get('materia')?.value);
+        }
+      });
+    } else {
+      this.actualizarCursosPorMateria(this.editForm.get('materia')?.value);
+    }
+
+    this.editForm.get('materia')?.valueChanges.subscribe(mat => {
+      this.actualizarCursosPorMateria(mat);
+    });
+
     this.cargarReservas();
+  }
+
+  actualizarCursosPorMateria(materiaNombre?: string): void {
+    if (this.tieneAsignaciones && this.todasLasAsignacionesDocente.length > 0 && materiaNombre) {
+      const asignadas = this.todasLasAsignacionesDocente
+        .filter(a => (a.materiaNombre || '').trim().toLowerCase() === materiaNombre.trim().toLowerCase())
+        .map(a => a.cursoNombre);
+      const setCursos = Array.from(new Set(asignadas));
+      this.cursosFiltradosPorMateria = setCursos.length > 0 ? setCursos : [...this.cursosDisponibles];
+    } else {
+      this.cursosFiltradosPorMateria = [...this.cursosDisponibles];
+    }
+    this.cdr.markForCheck();
   }
 
   cargarReservas(): void {
@@ -139,7 +188,7 @@ export class ReservasConfirmadas implements OnInit {
     });
   }
 
-  // HU04: Abrir modal de edición con los datos actuales
+  // Abrir modal de edición con los datos actuales
   abrirModalEdicion(reserva: ReservaDisplay): void {
     this.reservaEnEdicion = reserva;
     this.errorEdicion = '';
@@ -147,6 +196,8 @@ export class ReservasConfirmadas implements OnInit {
     const fecha = reserva.rawInicio.includes('T') ? reserva.rawInicio.split('T')[0] : '';
     const horaDesde = reserva.rawInicio.includes('T') ? reserva.rawInicio.split('T')[1].substring(0, 5) : '08:00';
     const horaHasta = reserva.rawFin.includes('T') ? reserva.rawFin.split('T')[1].substring(0, 5) : '10:00';
+
+    this.actualizarCursosPorMateria(reserva.materia);
 
     this.editForm.patchValue({
       salaId: Number(reserva.salaId),
@@ -220,6 +271,7 @@ export class ReservasConfirmadas implements OnInit {
         const msg = err.error?.sala_ocupada?.[0] ||
                     err.error?.horario_escolar?.[0] ||
                     err.error?.materia?.[0] ||
+                    err.error?.curso?.[0] ||
                     err.error?.non_field_errors?.[0] ||
                     err.error?.detail ||
                     'No se pudo actualizar la reserva. Verificá que el horario no esté ocupado ni supere el tope semanal.';

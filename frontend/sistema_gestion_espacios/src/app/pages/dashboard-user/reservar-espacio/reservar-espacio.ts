@@ -7,6 +7,7 @@ import { AuthService } from '../../../services/auth';
 import { CommonModule } from '@angular/common';
 
 import { UsersService } from '../../../services/users';
+import { DocentesService } from '../../../services/docentes';
 
 export interface HorarioOcupado {
   inicio: string;
@@ -37,6 +38,7 @@ export class ReservarEspacio implements OnInit {
   private labsService = inject(LabsService);
   private reservationService = inject(ReservationService);
   private usersService = inject(UsersService);
+  private docentesService = inject(DocentesService);
   private authService = inject(AuthService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -48,7 +50,13 @@ export class ReservarEspacio implements OnInit {
   reservaForm: FormGroup;
   salas: Lab[] = [];
 
-  // HU03: Cursos y Materias ProA
+  // Docente y Asignaciones Institucionales
+  esDocente = false;
+  tieneAsignaciones = false;
+  todasLasAsignacionesDocente: any[] = [];
+  cursosFiltradosPorMateria: string[] = [];
+
+  // Cursos y Materias ProA
   cursosDisponibles: string[] = [
     '1° Año A',
     '1° Año B',
@@ -127,12 +135,12 @@ export class ReservarEspacio implements OnInit {
   }
 
   ngOnInit(): void {
-    // Cargar todas las reservas para validar HU05 (tope semanal por materia)
+    // Cargar todas las reservas para validar tope semanal por materia
     this.reservationService.getAllReservations().subscribe({
       next: (all) => {
         this.todasLasReservasConfirmadas = all.filter(r => r.estado === 'confirmada');
       },
-      error: (e) => console.warn('Error al precargar reservas para HU05:', e)
+      error: (e) => console.warn('Error al precargar reservas para validación de topes:', e)
     });
 
     // Cargar laboratorios activos
@@ -195,6 +203,47 @@ export class ReservarEspacio implements OnInit {
       }
     });
 
+    // Cargar materias y cursos asignados si el usuario es docente
+    const currentUser = this.authService.getCurrentUser();
+    if (currentUser && currentUser.rol === 'docente' && currentUser.id) {
+      this.esDocente = true;
+      this.docentesService.getMateriasDocente(Number(currentUser.id)).subscribe({
+        next: (data) => {
+          if (data && data.materias && data.materias.length > 0) {
+            this.tieneAsignaciones = true;
+            this.todasLasAsignacionesDocente = data.asignaciones || [];
+            this.materiasDisponibles = data.materias.map(m => m.nombre);
+            this.cursosDisponibles = data.cursos.map(c => c.nombre);
+
+            const primeraMateria = this.materiasDisponibles[0];
+            this.actualizarCursosPorMateria(primeraMateria);
+            this.reservaForm.patchValue({
+              materia: primeraMateria,
+              curso: this.cursosFiltradosPorMateria[0] || (this.cursosDisponibles[0] || '')
+            });
+          } else {
+            this.tieneAsignaciones = false;
+            this.cursosFiltradosPorMateria = [...this.cursosDisponibles];
+          }
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          console.warn('No se pudieron obtener materias asignadas del docente:', err);
+          this.cursosFiltradosPorMateria = [...this.cursosDisponibles];
+          this.cdr.markForCheck();
+        }
+      });
+    } else {
+      this.cursosFiltradosPorMateria = [...this.cursosDisponibles];
+    }
+
+    // Al cambiar la materia, filtrar los cursos disponibles para el docente
+    this.reservaForm.get('materia')?.valueChanges.subscribe(matSel => {
+      if (matSel) {
+        this.actualizarCursosPorMateria(matSel);
+      }
+    });
+
     // Paso 1: Docente selecciona laboratorio y fecha
     this.reservaForm.get('sala')?.valueChanges.subscribe(salaId => {
       if (salaId) {
@@ -217,6 +266,24 @@ export class ReservarEspacio implements OnInit {
         this.actualizarHorariosDisponibles(fecha);
       }
     });
+  }
+
+  actualizarCursosPorMateria(materiaNombre: string): void {
+    if (this.tieneAsignaciones && this.todasLasAsignacionesDocente.length > 0) {
+      const asignadas = this.todasLasAsignacionesDocente
+        .filter(a => (a.materiaNombre || '').trim().toLowerCase() === (materiaNombre || '').trim().toLowerCase())
+        .map(a => a.cursoNombre);
+      const setCursos = Array.from(new Set(asignadas));
+      this.cursosFiltradosPorMateria = setCursos.length > 0 ? setCursos : [...this.cursosDisponibles];
+    } else {
+      this.cursosFiltradosPorMateria = [...this.cursosDisponibles];
+    }
+
+    const cursoActual = this.reservaForm.get('curso')?.value;
+    if (!this.cursosFiltradosPorMateria.includes(cursoActual) && this.cursosFiltradosPorMateria.length > 0) {
+      this.reservaForm.patchValue({ curso: this.cursosFiltradosPorMateria[0] }, { emitEvent: false });
+    }
+    this.cdr.markForCheck();
   }
 
   // Paso 2: Cliente envía GET /api/v1/reservas/?salaId={id}&estado=confirmada
@@ -398,7 +465,7 @@ export class ReservarEspacio implements OnInit {
       return;
     }
 
-    // HU05: Validación automática de topes semanales de reserva por materia (máximo 3 por semana)
+    // Validación automática de topes semanales de reserva por materia (máximo 3 por semana)
     if (materia && fechaDesde) {
       const fechaObj = new Date(fechaDesde + 'T00:00:00');
       const diaSemana = (fechaObj.getDay() + 6) % 7; // Lunes = 0
@@ -478,10 +545,18 @@ export class ReservarEspacio implements OnInit {
           return;
         }
 
-        // HU05: Error de tope semanal por materia
+        // Error de tope semanal por materia o materia no asignada institucionalmente
         if (err.error?.materia) {
           this.errorFormulario = true;
           this.errorMessage = Array.isArray(err.error.materia) ? err.error.materia[0] : err.error.materia;
+          this.cdr.markForCheck();
+          return;
+        }
+
+        // Error de curso no asignado institucionalmente
+        if (err.error?.curso) {
+          this.errorFormulario = true;
+          this.errorMessage = Array.isArray(err.error.curso) ? err.error.curso[0] : err.error.curso;
           this.cdr.markForCheck();
           return;
         }

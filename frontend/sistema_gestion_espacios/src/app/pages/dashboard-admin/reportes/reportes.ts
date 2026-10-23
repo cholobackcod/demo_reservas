@@ -1,8 +1,10 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { ReservationService } from '../../../services/reservation';
 import { UsersService } from '../../../services/users';
 import { LabsService } from '../../../services/labs';
+import { environment } from '../../../../environments/environment';
 import { forkJoin } from 'rxjs';
 
 export interface StatLab {
@@ -19,6 +21,7 @@ export interface StatLab {
   styleUrl: './reportes.css',
 })
 export class Reportes implements OnInit {
+  private http = inject(HttpClient);
   private reservationService = inject(ReservationService);
   private usersService = inject(UsersService);
   private labsService = inject(LabsService);
@@ -32,6 +35,23 @@ export class Reportes implements OnInit {
   statsPorLab: StatLab[] = [];
 
   ngOnInit(): void {
+    this.http.get<any>(`${environment.apiUrl}/reportes/`).subscribe({
+      next: (data) => {
+        this.totalReservas = data.totalReservas ?? 0;
+        this.docentesRegistrados = data.docentesRegistrados ?? 0;
+        this.labsDisponibles = data.labsDisponibles ?? 0;
+        this.ocupacionPromedio = data.ocupacionPromedio ?? 0;
+        this.statsPorLab = data.statsPorLab ?? [];
+        this.loading = false;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.cargarFallbackLocal();
+      }
+    });
+  }
+
+  private cargarFallbackLocal(): void {
     forkJoin({
       reservas: this.reservationService.getAllReservations(),
       users: this.usersService.getUsers(),
@@ -70,4 +90,3 @@ export class Reportes implements OnInit {
     });
   }
 }
-

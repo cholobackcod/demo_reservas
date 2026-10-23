@@ -74,7 +74,7 @@
               </td>
               <td class="text-end pe-3">
                 <div class="d-inline-flex gap-2">
-                  <!-- BOTÓN EDITAR (HU04) -->
+                  <!-- BOTÓN EDITAR -->
                   <button
                     type="button"
                     class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1 shadow-sm"
@@ -85,7 +85,7 @@
                     <span>Editar</span>
                   </button>
 
-                  <!-- BOTÓN CANCELAR (HU04) -->
+                  <!-- BOTÓN CANCELAR -->
                   <button
                     type="button"
                     class="btn btn-outline-danger btn-sm d-inline-flex align-items-center gap-1 shadow-sm"
@@ -113,7 +113,7 @@
   </div>
 }
 
-<!-- MODAL DE EDICIÓN DE RESERVA (HU04) -->
+<!-- MODAL DE EDICIÓN DE RESERVA -->
 @if (reservaEnEdicion) {
   <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5); z-index: 1050;" (click)="cerrarModalEdicion()">
     <div class="modal-dialog modal-dialog-centered modal-lg" (click)="$event.stopPropagation()">
@@ -163,25 +163,30 @@
                 <input id="editHoraHasta" type="time" min="07:00" max="18:00" class="form-control" formControlName="horaHasta">
               </div>
 
-              <!-- CURSO -->
-              <div class="col-12 col-md-4">
-                <label for="editCurso" class="form-label fw-semibold">Curso / Año</label>
-                <select id="editCurso" class="form-select" formControlName="curso">
-                  @for (c of cursosDisponibles; track c) {
-                    <option [value]="c">{{ c }}</option>
-                  }
-                </select>
-              </div>
-
               <!-- MATERIA -->
               <div class="col-12 col-md-5">
-                <label for="editMateria" class="form-label fw-semibold">Materia</label>
+                <label for="editMateria" class="form-label fw-semibold">
+                  Materia
+                  @if (esDocente && tieneAsignaciones) {
+                    <span class="badge bg-primary-subtle text-primary ms-1">Asignada</span>
+                  }
+                </label>
                 <select id="editMateria" class="form-select" formControlName="materia">
                   @for (m of materiasDisponibles; track m) {
                     <option [value]="m">{{ m }}</option>
                   }
                 </select>
-                <div class="text-muted small mt-1">Tope: máx 3 reservas semanales por materia (HU05).</div>
+                <div class="text-muted small mt-1">Tope: máx 3 reservas semanales por materia.</div>
+              </div>
+
+              <!-- CURSO -->
+              <div class="col-12 col-md-4">
+                <label for="editCurso" class="form-label fw-semibold">Curso / Año</label>
+                <select id="editCurso" class="form-select" formControlName="curso">
+                  @for (c of cursosFiltradosPorMateria; track c) {
+                    <option [value]="c">{{ c }}</option>
+                  }
+                </select>
               </div>
 
               <!-- NETBOOKS -->

@@ -8,3 +8,5 @@ class ReportesAPITestCase(APITestCase):
         self.assertIn('totalReservas', response.data)
         self.assertIn('docentesRegistrados', response.data)
         self.assertIn('labsDisponibles', response.data)
+        self.assertIn('ocupacionPromedio', response.data)
+        self.assertIn('statsPorLab', response.data)

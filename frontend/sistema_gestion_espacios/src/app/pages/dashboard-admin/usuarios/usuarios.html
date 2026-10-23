@@ -94,6 +94,11 @@
           </span>
         </td>
         <td>
+          @if (u.rol === 'docente') {
+            <a routerLink="/dashboard/admin/docentes" class="btn btn-outline-info btn-sm me-2" title="Gestionar asignaciones de materias y carga horaria">
+              <i class="bi bi-person-workspace me-1"></i>Asignaciones
+            </a>
+          }
           <button class="btn btn-warning btn-sm me-2" (click)="abrirEditar(u)">
             Modificar
           </button>

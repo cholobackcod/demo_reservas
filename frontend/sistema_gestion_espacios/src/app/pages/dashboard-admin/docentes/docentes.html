@@ -1,0 +1,932 @@
+<div class="docentes-admin-container mb-5">
+
+  <!-- HEADER DE LA SECCIÓN -->
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+    <div>
+      <h2 class="fw-bold mb-1 text-primary d-flex align-items-center gap-2">
+        <i class="bi bi-person-workspace text-primary"></i>Gestión de Docentes y Asignación de Materias
+      </h2>
+      <p class="text-muted mb-0 small">
+        Administración de cuentas docentes, asignación de espacios curriculares, horarios y cálculo automático de la carga horaria semanal.
+      </p>
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+      <button type="button" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1 shadow-sm" (click)="abrirConfig()">
+        <i class="bi bi-gear-fill text-secondary"></i>
+        <span>Módulos: <strong>{{ config?.duracion_modulo_minutos || 40 }} min</strong></span>
+      </button>
+
+      <button type="button" class="btn btn-success btn-sm d-flex align-items-center gap-1 shadow-sm fw-semibold" (click)="abrirCrearDocente()">
+        <i class="bi bi-person-plus-fill"></i>
+        <span>Nuevo Docente</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- TARJETAS DE MÉTRICAS GLOBALES -->
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 border-start border-primary border-4">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-muted small fw-semibold text-uppercase">Total Docentes</span>
+            <h3 class="fw-bold mb-0 text-dark mt-1">{{ docentes.length }}</h3>
+            <span class="badge bg-success-subtle text-success small mt-1">{{ totalDocentesActivos }} activos</span>
+          </div>
+          <div class="fs-1 text-primary opacity-50"><i class="bi bi-people-fill"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 border-start border-info border-4">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-muted small fw-semibold text-uppercase">Carga Horaria Semanal</span>
+            <h3 class="fw-bold mb-0 text-info mt-1">{{ totalHorasInstitucionalesFormato }}</h3>
+            <span class="text-muted small mt-1 d-block">{{ totalHorasInstitucionalesMinutos }} minutos reloj</span>
+          </div>
+          <div class="fs-1 text-info opacity-50"><i class="bi bi-clock-history"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 border-start border-warning border-4">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-muted small fw-semibold text-uppercase">Módulos Pedagógicos</span>
+            <h3 class="fw-bold mb-0 text-warning mt-1">{{ totalModulosInstitucionales }}</h3>
+            <span class="text-muted small mt-1 d-block">Base: {{ config?.duracion_modulo_minutos || 40 }} min / módulo</span>
+          </div>
+          <div class="fs-1 text-warning opacity-50"><i class="bi bi-journal-bookmark-fill"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 border-start border-success border-4">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-muted small fw-semibold text-uppercase">Ciclo Lectivo</span>
+            <h3 class="fw-bold mb-0 text-success mt-1">{{ config?.ciclo_lectivo_actual || '2026' }}</h3>
+            <span class="text-muted small mt-1 d-block">Sede Capital Norte</span>
+          </div>
+          <div class="fs-1 text-success opacity-50"><i class="bi bi-calendar-check-fill"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAVEGACIÓN ENTRE VISTAS -->
+  <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
+    <div class="card-header bg-white border-bottom p-2 d-flex align-items-center justify-content-between flex-wrap gap-2">
+      <ul class="nav nav-pills card-header-pills">
+        <li class="nav-item">
+          <button
+            class="nav-link fw-semibold"
+            [class.active]="vistaActiva === 'docentes'"
+            (click)="vistaActiva = 'docentes'"
+          >
+            <i class="bi bi-person-lines-fill me-1"></i>Listado y Carga Horaria de Docentes
+          </button>
+        </li>
+        <li class="nav-item">
+          <button
+            class="nav-link fw-semibold"
+            [class.active]="vistaActiva === 'todas_asignaciones'"
+            (click)="vistaActiva = 'todas_asignaciones'; cargarTodasAsignaciones()"
+          >
+            <i class="bi bi-calendar3 me-1"></i>Todas las Asignaciones Escolares
+          </button>
+        </li>
+      </ul>
+
+      <button type="button" class="btn btn-primary btn-sm fw-semibold" (click)="abrirCrearAsignacion()">
+        <i class="bi bi-plus-circle me-1"></i>Asignar Materia y Horario
+      </button>
+    </div>
+
+    <!-- VISTA 1: LISTADO DE DOCENTES Y CARGA HORARIA -->
+    @if (vistaActiva === 'docentes') {
+      <div class="card-body p-3">
+        <!-- BARRA DE BÚSQUEDA Y FILTROS -->
+        <div class="row g-2 mb-3 align-items-center">
+          <div class="col-12 col-md-5">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Buscar docente por nombre, apellido o email..."
+                [(ngModel)]="searchTerm"
+                (ngModelChange)="cargarDocentes()"
+              >
+            </div>
+          </div>
+
+          <div class="col-6 col-md-3">
+            <select class="form-select form-select-sm" [(ngModel)]="filtroEstado" (ngModelChange)="cargarDocentes()">
+              <option value="todos">Todos los Estados</option>
+              <option value="activos">Solo Cuentas Activas</option>
+              <option value="inactivos">Solo Cuentas Inactivas</option>
+            </select>
+          </div>
+
+          <div class="col-6 col-md-2">
+            <select class="form-select form-select-sm" [(ngModel)]="filtroCiclo" (ngModelChange)="cargarDocentes()">
+              <option value="2026">Ciclo 2026</option>
+              <option value="2025">Ciclo 2025</option>
+            </select>
+          </div>
+
+          <div class="col-12 col-md-2 text-md-end text-muted small">
+            <span>{{ docentesFiltrados.length }} docente(s) encontrado(s)</span>
+          </div>
+        </div>
+
+        @if (loading) {
+          <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Cargando docentes...</span>
+            </div>
+            <div class="text-muted small mt-2">Cargando nómina y calculando cargas horarias...</div>
+          </div>
+        } @else {
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr class="small text-muted text-uppercase">
+                  <th>Docente</th>
+                  <th>Estado</th>
+                  <th>Carga Horaria Semanal</th>
+                  <th>Módulos</th>
+                  <th>Materias Asignadas</th>
+                  <th class="text-end pe-3">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (d of docentesFiltrados; track d.id) {
+                  <tr>
+                    <!-- DOCENTE -->
+                    <td>
+                      <div class="d-flex align-items-center gap-2">
+                        <div class="avatar-sm rounded-circle bg-primary-subtle text-primary fw-bold d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                          {{ d.nombre[0] }}{{ d.apellido[0] }}
+                        </div>
+                        <div>
+                          <strong class="text-dark d-block">{{ d.nombre }} {{ d.apellido }}</strong>
+                          <span class="text-muted small"><i class="bi bi-envelope me-1"></i>{{ d.email }}</span>
+                        </div>
+                      </div>
+                    </td>
+
+                    <!-- ESTADO -->
+                    <td>
+                      @if (d.activo) {
+                        <span class="badge bg-success-subtle text-success border border-success-subtle">
+                          <i class="bi bi-check-circle me-1"></i>Activo
+                        </span>
+                      } @else {
+                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle">
+                          <i class="bi bi-dash-circle me-1"></i>Inactivo
+                        </span>
+                      }
+                    </td>
+
+                    <!-- CARGA HORARIA SEMANAL -->
+                    <td>
+                      <div class="fw-bold text-primary fs-6">
+                        <i class="bi bi-clock me-1"></i>{{ d.totalHorasRelojFormato }}
+                      </div>
+                      <div class="text-muted small">
+                        {{ d.totalMinutosSemanal }} min reloj &bull; {{ d.asignaciones.length }} bloque(s)
+                      </div>
+                    </td>
+
+                    <!-- MÓDULOS SEMANALES -->
+                    <td>
+                      <span class="badge bg-light text-dark border fs-6 fw-semibold">
+                        {{ d.totalModulos }} mód.
+                      </span>
+                      <div class="text-muted small" style="font-size: 0.72rem;">
+                        {{ d.duracionModuloMinutos }}m c/u
+                      </div>
+                    </td>
+
+                    <!-- MATERIAS ASIGNADAS -->
+                    <td style="max-width: 250px;">
+                      @if (d.materiasAsignadas && d.materiasAsignadas.length > 0) {
+                        <div class="d-flex flex-wrap gap-1">
+                          @for (m of d.materiasAsignadas; track m) {
+                            <span class="badge bg-secondary-subtle text-dark border small text-truncate" style="max-width: 140px;" [title]="m">
+                              {{ m }}
+                            </span>
+                          }
+                        </div>
+                      } @else {
+                        <span class="text-muted small fst-italic">Sin materias asignadas</span>
+                      }
+                    </td>
+
+                    <!-- ACCIONES -->
+                    <td class="text-end pe-3">
+                      <div class="btn-group btn-group-sm" role="group">
+                        <button
+                          type="button"
+                          class="btn btn-outline-primary"
+                          (click)="verFichaDocente(d)"
+                          title="Ver Ficha y Grilla Semanal"
+                        >
+                          <i class="bi bi-calendar-week me-1"></i>Horario
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-outline-success"
+                          (click)="abrirCrearAsignacion(d.id)"
+                          title="Asignar Materia"
+                        >
+                          <i class="bi bi-plus-lg"></i>
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-outline-secondary"
+                          (click)="abrirEditarDocente(d)"
+                          title="Editar cuenta"
+                        >
+                          <i class="bi bi-pencil"></i>
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-outline-warning"
+                          (click)="abrirResetPassword(d)"
+                          title="Restablecer contraseña"
+                        >
+                          <i class="bi bi-key"></i>
+                        </button>
+                        <button
+                          type="button"
+                          class="btn"
+                          [class.btn-outline-danger]="d.activo"
+                          [class.btn-outline-success]="!d.activo"
+                          (click)="toggleEstadoDocente(d)"
+                          [title]="d.activo ? 'Desactivar cuenta (baja lógica)' : 'Activar cuenta'"
+                        >
+                          <i [class.bi-person-dash]="d.activo" [class.bi-person-check]="!d.activo"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="6" class="text-center py-5 text-muted">
+                      <i class="bi bi-search fs-2 d-block mb-2 text-secondary opacity-50"></i>
+                      No se encontraron docentes con los criterios seleccionados.
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- VISTA 2: TODAS LAS ASIGNACIONES ESCOLARES (FILTROS) -->
+    @if (vistaActiva === 'todas_asignaciones') {
+      <div class="card-body p-3">
+        <div class="row g-2 mb-3">
+          <div class="col-12 col-md-3">
+            <label class="form-label small text-muted mb-1">Filtrar por Curso:</label>
+            <select class="form-select form-select-sm" [(ngModel)]="filtroCursoAsig">
+              <option value="">Todos los Cursos</option>
+              @for (c of cursos; track c.id) {
+                <option [value]="c.id">{{ c.nombre }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="col-12 col-md-3">
+            <label class="form-label small text-muted mb-1">Filtrar por Materia:</label>
+            <select class="form-select form-select-sm" [(ngModel)]="filtroMateriaAsig">
+              <option value="">Todas las Materias</option>
+              @for (m of materias; track m.id) {
+                <option [value]="m.id">{{ m.nombre }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="col-12 col-md-3">
+            <label class="form-label small text-muted mb-1">Filtrar por Día:</label>
+            <select class="form-select form-select-sm" [(ngModel)]="filtroDiaAsig">
+              <option value="">Todos los Días</option>
+              @for (d of diasSemana; track d.key) {
+                <option [value]="d.key">{{ d.label }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="col-12 col-md-3 d-flex align-items-end">
+            <button type="button" class="btn btn-outline-secondary btn-sm w-100" (click)="filtroCursoAsig = ''; filtroMateriaAsig = ''; filtroDiaAsig = ''">
+              <i class="bi bi-arrow-counterclockwise me-1"></i>Limpiar Filtros
+            </button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered align-middle">
+            <thead class="table-light">
+              <tr class="small text-muted">
+                <th>Docente</th>
+                <th>Materia / Espacio Curricular</th>
+                <th>Curso</th>
+                <th>Día</th>
+                <th>Horario</th>
+                <th>Duración</th>
+                <th>Tipo</th>
+                <th class="text-end">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (a of asignacionesFiltradas; track a.id) {
+                <tr>
+                  <td><strong>{{ a.docenteNombre }}</strong></td>
+                  <td>{{ a.materiaNombre }}</td>
+                  <td><span class="badge bg-light text-dark border">{{ a.cursoNombre }}</span></td>
+                  <td class="text-capitalize">{{ a.dia_semana }}</td>
+                  <td><span class="badge bg-primary-subtle text-primary">{{ a.hora_inicio }} - {{ a.hora_fin }} hs</span></td>
+                  <td>{{ a.duracionMinutos }} min ({{ a.duracionHorasFormato }})</td>
+                  <td><span class="badge" [ngClass]="badgeClase(a.tipo_actividad)">{{ a.tipo_actividad }}</span></td>
+                  <td class="text-end">
+                    <button type="button" class="btn btn-link btn-sm text-primary p-0 me-2" (click)="abrirEditarAsignacion(a)">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button type="button" class="btn btn-link btn-sm text-danger p-0" (click)="eliminarAsignacion(a.id)">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="8" class="text-center py-4 text-muted">No hay asignaciones registradas con los filtros seleccionados.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+  </div>
+
+</div>
+
+
+<!-- ============================================================ -->
+<!-- MODAL 1: FICHA Y GRILLA SEMANAL DEL DOCENTE                  -->
+<!-- ============================================================ -->
+@if (modalFichaVisible && docenteSeleccionado) {
+  <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5); z-index: 1050;" (click)="cerrarFichaDocente()">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable" (click)="$event.stopPropagation()">
+      <div class="modal-content shadow border-0">
+        <div class="modal-header bg-primary text-white py-3">
+          <div class="d-flex align-items-center gap-3">
+            <div class="avatar-md rounded-circle bg-white text-primary fw-bold d-flex align-items-center justify-content-center fs-4" style="width: 48px; height: 48px;">
+              {{ docenteSeleccionado.nombre[0] }}{{ docenteSeleccionado.apellido[0] }}
+            </div>
+            <div>
+              <h5 class="modal-title fw-bold mb-0">
+                Ficha Horaria Oficial: Prof. {{ docenteSeleccionado.nombre }} {{ docenteSeleccionado.apellido }}
+              </h5>
+              <span class="small text-white-50">
+                <i class="bi bi-envelope me-1"></i>{{ docenteSeleccionado.email }} &bull; Ciclo Lectivo {{ filtroCiclo }}
+              </span>
+            </div>
+          </div>
+          <button type="button" class="btn-close btn-close-white" (click)="cerrarFichaDocente()"></button>
+        </div>
+
+        <div class="modal-body p-4">
+
+          <!-- WIDGETS DE CARGA HORARIA DEL DOCENTE -->
+          <div class="row g-3 mb-4">
+            <div class="col-12 col-md-4">
+              <div class="p-3 bg-primary-subtle rounded-3 border border-primary-subtle text-center">
+                <div class="text-primary small fw-semibold text-uppercase">Carga Horaria Semanal</div>
+                <div class="fs-2 fw-black text-primary mt-1">{{ docenteSeleccionado.totalHorasRelojFormato }}</div>
+                <span class="text-muted small">{{ docenteSeleccionado.totalMinutosSemanal }} minutos reloj totales</span>
+              </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+              <div class="p-3 bg-warning-subtle rounded-3 border border-warning-subtle text-center">
+                <div class="text-warning-emphasis small fw-semibold text-uppercase">Módulos Semanales</div>
+                <div class="fs-2 fw-black text-warning-emphasis mt-1">{{ docenteSeleccionado.totalModulos }}</div>
+                <span class="text-muted small">Equivalencia: {{ docenteSeleccionado.duracionModuloMinutos }} min reloj / módulo</span>
+              </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+              <div class="p-3 bg-light rounded-3 border text-center">
+                <div class="text-secondary small fw-semibold text-uppercase">Espacios Curriculares</div>
+                <div class="fs-2 fw-black text-dark mt-1">{{ docenteSeleccionado.materiasAsignadas.length }}</div>
+                <span class="text-muted small">{{ docenteSeleccionado.asignaciones.length }} bloque(s) horario(s) registrados</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- DESGLOSE DIARIO DE LUNES A VIERNES -->
+          <h6 class="fw-bold text-dark mb-2">
+            <i class="bi bi-bar-chart-steps me-1 text-primary"></i>Desglose de Carga Horaria por Día (Lunes a Viernes)
+          </h6>
+          <div class="row g-2 mb-4">
+            @for (d of diasSemana; track d.key) {
+              @let infoDia = getDesgloseDia(docenteSeleccionado, d.key);
+              <div class="col">
+                <div class="p-2 rounded-2 border text-center" [class.bg-light]="infoDia.minutos === 0" [class.bg-primary-subtle]="infoDia.minutos > 0" [class.border-primary]="infoDia.minutos > 0">
+                  <div class="fw-bold small text-dark">{{ d.label }}</div>
+                  <div class="fs-6 fw-bold" [class.text-primary]="infoDia.minutos > 0" [class.text-muted]="infoDia.minutos === 0">
+                    {{ infoDia.horasFormato }}
+                  </div>
+                  <div class="small text-muted" style="font-size: 0.7rem;">
+                    {{ infoDia.minutos }}m &bull; {{ infoDia.modulos }} mód.
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- GRILLA SEMANAL VISUAL -->
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <h6 class="fw-bold text-dark mb-0">
+              <i class="bi bi-calendar3-week me-1 text-primary"></i>Grilla Semanal Visual de Clases
+            </h6>
+            <button type="button" class="btn btn-sm btn-outline-primary" (click)="abrirCrearAsignacion(docenteSeleccionado.id)">
+              <i class="bi bi-plus-circle me-1"></i>Agregar Bloque a este Docente
+            </button>
+          </div>
+
+          <div class="table-responsive mb-4">
+            <table class="table table-bordered grilla-semanal mb-0">
+              <thead class="table-light text-center">
+                <tr>
+                  @for (d of diasSemana; track d.key) {
+                    @let diaHeader = getDesgloseDia(docenteSeleccionado, d.key);
+                    <th style="width: 20%;" class="py-2">
+                      <div class="fw-bold text-dark">{{ d.label }}</div>
+                      <div class="small text-muted">{{ diaHeader.horasFormato }}</div>
+                    </th>
+                  }
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  @for (d of diasSemana; track d.key) {
+                    @let bloques = getDesgloseDia(docenteSeleccionado, d.key).bloques;
+                    <td class="align-top p-2 grilla-columna bg-light-subtle">
+                      @for (b of bloques; track b.id) {
+                        <div class="bloque-card p-2 rounded-2 mb-2 shadow-sm border bg-white position-relative">
+                          <div class="d-flex align-items-center justify-content-between gap-1 mb-1">
+                            <span class="badge" [ngClass]="badgeClase(b.tipo_actividad)" style="font-size: 0.68rem;">
+                              {{ b.tipo_actividad }}
+                            </span>
+                            <div class="btn-group btn-group-sm">
+                              <button type="button" class="btn btn-link btn-sm p-0 text-primary" (click)="abrirEditarAsignacion(b)" title="Editar">
+                                <i class="bi bi-pencil-fill" style="font-size: 0.75rem;"></i>
+                              </button>
+                              <button type="button" class="btn btn-link btn-sm p-0 text-danger ms-1" (click)="eliminarAsignacion(b.id)" title="Eliminar">
+                                <i class="bi bi-trash-fill" style="font-size: 0.75rem;"></i>
+                              </button>
+                            </div>
+                          </div>
+
+                          <div class="fw-bold text-dark small text-truncate" [title]="b.materiaNombre">
+                            {{ b.materiaNombre }}
+                          </div>
+                          <div class="text-primary small fw-semibold">
+                            <i class="bi bi-mortarboard me-1"></i>{{ b.cursoNombre }}
+                          </div>
+                          <div class="text-danger small mt-1 fw-bold" style="font-size: 0.75rem;">
+                            <i class="bi bi-clock me-1"></i>{{ b.hora_inicio }} a {{ b.hora_fin }} hs
+                          </div>
+                          <div class="text-muted" style="font-size: 0.68rem;">
+                            {{ b.duracionMinutos }} min reloj ({{ b.duracionHorasFormato }})
+                          </div>
+                        </div>
+                      } @empty {
+                        <div class="text-center py-4 text-muted small fst-italic">
+                          Sin clases este día
+                        </div>
+                      }
+                    </td>
+                  }
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- TABLA RESUMEN DE ASIGNACIONES -->
+          <h6 class="fw-bold text-dark mb-2">
+            <i class="bi bi-list-check me-1 text-primary"></i>Detalle de Bloques Horarios
+          </h6>
+          <div class="table-responsive">
+            <table class="table table-sm table-striped table-hover align-middle">
+              <thead class="table-light small text-muted">
+                <tr>
+                  <th>Materia</th>
+                  <th>Curso</th>
+                  <th>Día</th>
+                  <th>Horario</th>
+                  <th>Minutos Reloj</th>
+                  <th>Tipo</th>
+                  <th class="text-end">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (a of docenteSeleccionado.asignaciones; track a.id) {
+                  <tr>
+                    <td><strong>{{ a.materiaNombre }}</strong></td>
+                    <td>{{ a.cursoNombre }}</td>
+                    <td class="text-capitalize">{{ a.dia_semana }}</td>
+                    <td><span class="badge bg-primary-subtle text-primary">{{ a.hora_inicio }} a {{ a.hora_fin }} hs</span></td>
+                    <td>{{ a.duracionMinutos }} min ({{ a.duracionHorasFormato }})</td>
+                    <td><span class="badge" [ngClass]="badgeClase(a.tipo_actividad)">{{ a.tipo_actividad }}</span></td>
+                    <td class="text-end">
+                      <button type="button" class="btn btn-outline-primary btn-sm py-0 px-2 me-1" (click)="abrirEditarAsignacion(a)">
+                        Editar
+                      </button>
+                      <button type="button" class="btn btn-outline-danger btn-sm py-0 px-2" (click)="eliminarAsignacion(a.id)">
+                        Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="7" class="text-center py-3 text-muted">No hay materias asignadas a este docente.</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+        <div class="modal-footer py-2 bg-light">
+          <button type="button" class="btn btn-sm btn-secondary" (click)="cerrarFichaDocente()">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+
+<!-- ============================================================ -->
+<!-- MODAL 2: NUEVA / EDITAR ASIGNACIÓN CON DETECTOR DE CONFLICTOS -->
+<!-- ============================================================ -->
+@if (modalAsignacionVisible) {
+  <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5); z-index: 1060;" (click)="cerrarModalAsignacion()">
+    <div class="modal-dialog modal-dialog-centered modal-lg" (click)="$event.stopPropagation()">
+      <div class="modal-content shadow border-0">
+        <div class="modal-header bg-primary text-white py-3">
+          <h5 class="modal-title fw-bold mb-0">
+            <i class="bi bi-clock-fill me-2"></i>{{ editingAsignacionId ? 'Editar Asignación Horaria' : 'Nueva Asignación de Materia y Horario' }}
+          </h5>
+          <button type="button" class="btn-close btn-close-white" (click)="cerrarModalAsignacion()"></button>
+        </div>
+
+        <form [formGroup]="asignacionForm" (ngSubmit)="guardarAsignacion()">
+          <div class="modal-body p-4">
+
+            @if (errorAsignacion) {
+              <div class="alert alert-danger py-2 mb-3 shadow-sm border-danger" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ errorAsignacion }}
+              </div>
+            }
+
+            @if (advertenciaSuperposicion) {
+              <div class="alert alert-warning py-2 mb-3 shadow-sm border-warning" role="alert">
+                <i class="bi bi-exclamation-circle-fill me-2"></i>{{ advertenciaSuperposicion }}
+              </div>
+            }
+
+            <div class="row g-3">
+              <!-- DOCENTE -->
+              <div class="col-12 col-md-6">
+                <label for="asigDocente" class="form-label fw-semibold">Docente responsable:</label>
+                <select id="asigDocente" class="form-select" formControlName="docenteId">
+                  <option value="">Seleccionar docente...</option>
+                  @for (d of docentes; track d.id) {
+                    <option [value]="d.id">{{ d.nombre }} {{ d.apellido }} ({{ d.email }})</option>
+                  }
+                </select>
+              </div>
+
+              <!-- CURSO -->
+              <div class="col-12 col-md-6">
+                <label for="asigCurso" class="form-label fw-semibold">Curso (1° a 6° año):</label>
+                <select id="asigCurso" class="form-select" formControlName="cursoId">
+                  <option value="">Seleccionar curso...</option>
+                  @for (c of cursos; track c.id) {
+                    <option [value]="c.id">{{ c.nombre }}</option>
+                  }
+                </select>
+              </div>
+
+              <!-- MATERIA -->
+              <div class="col-12 col-md-8">
+                <label for="asigMateria" class="form-label fw-semibold">Materia / Espacio Curricular:</label>
+                <select id="asigMateria" class="form-select" formControlName="materiaId">
+                  <option value="">Seleccionar materia...</option>
+                  @for (m of materias; track m.id) {
+                    <option [value]="m.id">{{ m.nombre }}</option>
+                  }
+                </select>
+              </div>
+
+              <!-- TIPO DE ACTIVIDAD -->
+              <div class="col-12 col-md-4">
+                <label for="asigTipo" class="form-label fw-semibold">Tipo de Actividad:</label>
+                <select id="asigTipo" class="form-select" formControlName="tipo_actividad">
+                  <option value="materia">Materia Regular</option>
+                  <option value="tutoria">Tutoría</option>
+                  <option value="taller">Taller</option>
+                  <option value="club">Club</option>
+                </select>
+              </div>
+
+              <!-- DÍA DE LA SEMANA -->
+              <div class="col-12 col-md-4">
+                <label for="asigDia" class="form-label fw-semibold">Día de la Semana:</label>
+                <select id="asigDia" class="form-select" formControlName="dia_semana">
+                  <option value="lunes">Lunes</option>
+                  <option value="martes">Martes</option>
+                  <option value="miercoles">Miércoles</option>
+                  <option value="jueves">Jueves</option>
+                  <option value="viernes">Viernes</option>
+                </select>
+              </div>
+
+              <!-- HORA INICIO -->
+              <div class="col-6 col-md-4">
+                <label for="asigHoraInicio" class="form-label fw-semibold">Hora de Inicio:</label>
+                <input id="asigHoraInicio" type="time" class="form-control" formControlName="hora_inicio">
+              </div>
+
+              <!-- HORA FIN -->
+              <div class="col-6 col-md-4">
+                <label for="asigHoraFin" class="form-label fw-semibold">Hora de Finalización:</label>
+                <input id="asigHoraFin" type="time" class="form-control" formControlName="hora_fin">
+              </div>
+
+              <!-- CÁLCULO EN TIEMPO REAL -->
+              <div class="col-12">
+                <div class="p-3 bg-light rounded-3 border d-flex align-items-center justify-content-between flex-wrap gap-2">
+                  <div>
+                    <span class="text-muted small d-block">Duración calculada del bloque:</span>
+                    <strong class="text-primary fs-5">{{ duracionCalculadaHorasForm }}</strong>
+                  </div>
+                  <div>
+                    <span class="text-muted small d-block">Módulos pedagógicos equivalentes:</span>
+                    <strong class="text-warning-emphasis fs-5">{{ modulosCalculadosForm }} mód.</strong>
+                  </div>
+                </div>
+              </div>
+
+              <!-- CICLO LECTIVO -->
+              <div class="col-12 col-md-4">
+                <label for="asigCiclo" class="form-label fw-semibold">Ciclo Lectivo:</label>
+                <input id="asigCiclo" type="text" class="form-control" formControlName="ciclo_lectivo" placeholder="Ej: 2026">
+              </div>
+
+              <!-- OBSERVACIONES -->
+              <div class="col-12 col-md-8">
+                <label for="asigObs" class="form-label fw-semibold">Observaciones / Firma (opcional):</label>
+                <input id="asigObs" type="text" class="form-control" formControlName="observaciones" placeholder="Ej: Asignación oficial Sede Capital Norte">
+              </div>
+            </div>
+
+          </div>
+
+          <div class="modal-footer py-2 bg-light">
+            <button type="button" class="btn btn-secondary" (click)="cerrarModalAsignacion()" [disabled]="guardandoAsignacion">
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary fw-semibold" [disabled]="guardandoAsignacion">
+              @if (guardandoAsignacion) {
+                <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                <span>Guardando...</span>
+              } @else {
+                <i class="bi bi-save me-1"></i>
+                <span>{{ editingAsignacionId ? 'Actualizar Asignación' : 'Confirmar Asignación' }}</span>
+              }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+
+
+<!-- ============================================================ -->
+<!-- MODAL 3: CREAR / EDITAR DOCENTE                              -->
+<!-- ============================================================ -->
+@if (modalDocenteVisible) {
+  <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5); z-index: 1060;" (click)="cerrarModalDocente()">
+    <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
+      <div class="modal-content shadow border-0">
+        <div class="modal-header bg-success text-white py-3">
+          <h5 class="modal-title fw-bold mb-0">
+            <i class="bi bi-person-fill me-2"></i>{{ editingDocenteId ? 'Editar Cuenta Docente' : 'Alta de Nuevo Docente' }}
+          </h5>
+          <button type="button" class="btn-close btn-close-white" (click)="cerrarModalDocente()"></button>
+        </div>
+
+        @if (passwordGeneradaModal) {
+          <!-- PANTALLA DE ÉXITO CON CONTRASEÑA GENERADA -->
+          <div class="modal-body p-4 text-center">
+            <i class="bi bi-check-circle-fill text-success fs-1 mb-2 d-block"></i>
+            <h5 class="fw-bold text-dark">¡Cuenta Docente Creada con Éxito!</h5>
+            <p class="text-muted small">
+              Se ha generado una contraseña inicial segura para que el docente pueda iniciar sesión en el sistema:
+            </p>
+
+            <div class="input-group mb-3">
+              <input #passInput type="text" class="form-control text-center fw-bold fs-5 bg-light" [value]="passwordGeneradaModal" readonly>
+              <button class="btn btn-primary" type="button" (click)="copiarPassword(passInput)">
+                <i class="bi bi-clipboard me-1"></i>Copiar
+              </button>
+            </div>
+
+            <div class="alert alert-info py-2 small mb-0">
+              <i class="bi bi-info-circle me-1"></i>Compartí estas credenciales con el docente para su primer ingreso.
+            </div>
+          </div>
+          <div class="modal-footer py-2 bg-light">
+            <button type="button" class="btn btn-primary" (click)="cerrarModalDocente()">Listo</button>
+          </div>
+        } @else {
+          <form [formGroup]="docenteForm" (ngSubmit)="guardarDocente()">
+            <div class="modal-body p-4">
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <label for="docNombre" class="form-label fw-semibold">Nombre:</label>
+                  <input id="docNombre" type="text" class="form-control" formControlName="nombre" placeholder="Ej: Andrés">
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label for="docApellido" class="form-label fw-semibold">Apellido:</label>
+                  <input id="docApellido" type="text" class="form-control" formControlName="apellido" placeholder="Ej: Bianchi">
+                </div>
+
+                <div class="col-12">
+                  <label for="docEmail" class="form-label fw-semibold">Correo Electrónico Oficial:</label>
+                  <input id="docEmail" type="email" class="form-control" formControlName="email" placeholder="docente@proa.edu.ar">
+                </div>
+
+                @if (!editingDocenteId) {
+                  <div class="col-12">
+                    <div class="form-check form-switch mb-2">
+                      <input class="form-check-input" type="checkbox" id="checkAutoPass" [checked]="autoPassword" (change)="autoPassword = !autoPassword">
+                      <label class="form-check-label fw-semibold" for="checkAutoPass">
+                        Generar contraseña inicial segura automáticamente
+                      </label>
+                    </div>
+
+                    @if (!autoPassword) {
+                      <label for="docPassManual" class="form-label fw-semibold">Contraseña Manual:</label>
+                      <input id="docPassManual" type="password" class="form-control" formControlName="password" placeholder="Mínimo 4 caracteres">
+                    }
+                  </div>
+                }
+
+                <div class="col-12">
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="checkActivo" formControlName="activo">
+                    <label class="form-check-label" for="checkActivo">
+                      Cuenta activa y habilitada para reservas
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-footer py-2 bg-light">
+              <button type="button" class="btn btn-secondary" (click)="cerrarModalDocente()">Cancelar</button>
+              <button type="submit" class="btn btn-success fw-semibold">
+                {{ editingDocenteId ? 'Guardar Cambios' : 'Registrar Docente' }}
+              </button>
+            </div>
+          </form>
+        }
+      </div>
+    </div>
+  </div>
+}
+
+
+<!-- ============================================================ -->
+<!-- MODAL 4: RESTABLECER CONTRASEÑA                              -->
+<!-- ============================================================ -->
+@if (modalResetPasswordVisible && docenteParaReset) {
+  <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5); z-index: 1060;" (click)="cerrarModalResetPassword()">
+    <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
+      <div class="modal-content shadow border-0">
+        <div class="modal-header bg-warning text-dark py-3">
+          <h5 class="modal-title fw-bold mb-0">
+            <i class="bi bi-key-fill me-2"></i>Restablecer Contraseña
+          </h5>
+          <button type="button" class="btn-close" (click)="cerrarModalResetPassword()"></button>
+        </div>
+
+        @if (passwordRestablecidaExito) {
+          <div class="modal-body p-4 text-center">
+            <i class="bi bi-shield-check text-success fs-1 mb-2 d-block"></i>
+            <h5 class="fw-bold text-dark">¡Contraseña Actualizada!</h5>
+            <p class="text-muted small">
+              Nueva contraseña para <strong>{{ docenteParaReset.nombre }} {{ docenteParaReset.apellido }}</strong>:
+            </p>
+
+            <div class="input-group mb-3">
+              <input #resetPassInput type="text" class="form-control text-center fw-bold fs-5 bg-light" [value]="passwordRestablecidaExito" readonly>
+              <button class="btn btn-primary" type="button" (click)="copiarPassword(resetPassInput)">
+                <i class="bi bi-clipboard me-1"></i>Copiar
+              </button>
+            </div>
+          </div>
+          <div class="modal-footer py-2 bg-light">
+            <button type="button" class="btn btn-primary" (click)="cerrarModalResetPassword()">Cerrar</button>
+          </div>
+        } @else {
+          <div class="modal-body p-4">
+            <p class="text-muted small mb-3">
+              Estás a punto de restablecer la contraseña para el docente <strong>{{ docenteParaReset.nombre }} {{ docenteParaReset.apellido }}</strong> ({{ docenteParaReset.email }}).
+            </p>
+
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="resetAuto" [checked]="resetAutoPassword" (change)="resetAutoPassword = !resetAutoPassword">
+              <label class="form-check-label fw-semibold" for="resetAuto">
+                Generar contraseña segura automáticamente
+              </label>
+            </div>
+
+            @if (!resetAutoPassword) {
+              <form [formGroup]="resetPasswordForm">
+                <label for="nuevaPassManual" class="form-label fw-semibold">Nueva Contraseña:</label>
+                <input id="nuevaPassManual" type="password" class="form-control" formControlName="password" placeholder="Mínimo 4 caracteres">
+              </form>
+            }
+          </div>
+
+          <div class="modal-footer py-2 bg-light">
+            <button type="button" class="btn btn-secondary" (click)="cerrarModalResetPassword()">Cancelar</button>
+            <button type="button" class="btn btn-warning fw-semibold" (click)="ejecutarResetPassword()">
+              Restablecer Ahora
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}
+
+
+<!-- ============================================================ -->
+<!-- MODAL 5: CONFIGURACIÓN INSTITUCIONAL DE MÓDULOS              -->
+<!-- ============================================================ -->
+@if (modalConfigVisible) {
+  <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5); z-index: 1060;" (click)="cerrarModalConfig()">
+    <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
+      <div class="modal-content shadow border-0">
+        <div class="modal-header bg-dark text-white py-3">
+          <h5 class="modal-title fw-bold mb-0">
+            <i class="bi bi-sliders me-2"></i>Configuración Institucional de Carga Horaria
+          </h5>
+          <button type="button" class="btn-close btn-close-white" (click)="cerrarModalConfig()"></button>
+        </div>
+
+        <form [formGroup]="configForm" (ngSubmit)="guardarConfig()">
+          <div class="modal-body p-4">
+            <div class="mb-3">
+              <label for="cfgDuracion" class="form-label fw-semibold">Duración del Módulo Pedagógico (minutos reloj):</label>
+              <input id="cfgDuracion" type="number" min="10" max="120" class="form-control" formControlName="duracion_modulo_minutos">
+              <div class="form-text small">
+                Define la equivalencia para calcular la cantidad de módulos pedagógicos semanales (en la Escuela ProA suele ser 40 u 80 minutos).
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="cfgCiclo" class="form-label fw-semibold">Ciclo Lectivo Actual:</label>
+              <input id="cfgCiclo" type="text" class="form-control" formControlName="ciclo_lectivo_actual">
+            </div>
+          </div>
+
+          <div class="modal-footer py-2 bg-light">
+            <button type="button" class="btn btn-secondary" (click)="cerrarModalConfig()">Cancelar</button>
+            <button type="submit" class="btn btn-primary fw-semibold">Guardar Configuración</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}

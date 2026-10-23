@@ -9,10 +9,12 @@ urlpatterns = [
     path('api/v1/', include('salas.urls')),
     path('api/v1/', include('reservas.urls')),
     path('api/v1/', include('reportes.urls')),
+    path('api/v1/', include('docentes.urls')),
 
     # Direct compatibility fallback endpoints for existing frontend URLs if requested without /v1/
     path('api/', include('usuarios.urls')),
     path('api/', include('salas.urls')),
     path('api/', include('reservas.urls')),
     path('api/', include('reportes.urls')),
+    path('api/', include('docentes.urls')),
 ]

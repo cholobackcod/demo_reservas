@@ -85,7 +85,7 @@ class Reserva(models.Model):
                     fin_local.time() <= hora_apertura):
                     raise ValidationError('No es posible realizar reservas fuera del horario escolar (07:00 a 18:00 hs).')
 
-                # HU05: Validación automática de topes semanales de reserva por materia (máx 3 reservas por semana)
+                # Validación automática de topes semanales de reserva por materia (máx 3 reservas por semana)
                 if self.materia and self.materia.strip():
                     lunes = inicio_local.date() - datetime.timedelta(days=inicio_local.date().weekday())
                     domingo = lunes + datetime.timedelta(days=6)

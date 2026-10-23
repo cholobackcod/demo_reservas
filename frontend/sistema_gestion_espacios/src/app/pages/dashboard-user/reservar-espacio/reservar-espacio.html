@@ -180,28 +180,36 @@
     </div>
   </div>
 
-  <!-- HU03: CAMPOS CURSO, MATERIA Y NETBOOKS -->
+  <!-- CAMPOS CURSO, MATERIA Y NETBOOKS -->
   <div class="row g-3 mb-4">
-    <!-- CURSO -->
-    <div class="col-12 col-md-4">
-      <label for="curso" class="form-label fw-semibold">
-        <i class="bi bi-mortarboard me-1 text-primary"></i>Curso / Año
-      </label>
-      <select id="curso" class="form-select" formControlName="curso">
-        <option value="">Seleccionar curso...</option>
-        @for (c of cursosDisponibles; track c) {
-          <option [value]="c">{{ c }}</option>
+    <!-- AVISO DE FILTRADO POR ASIGNACIÓN DOCENTE INSTITUCIONAL -->
+    @if (esDocente) {
+      <div class="col-12">
+        @if (tieneAsignaciones) {
+          <div class="alert alert-info py-2 px-3 d-flex align-items-center gap-2 mb-0 rounded-3 border-info">
+            <i class="bi bi-person-badge-fill text-info fs-5"></i>
+            <div class="small">
+              <strong>Asignaciones ProA:</strong> Las materias y cursos se encuentran filtrados automáticamente según tus espacios curriculares vigentes asignados por administración.
+            </div>
+          </div>
+        } @else {
+          <div class="alert alert-warning py-2 px-3 d-flex align-items-center gap-2 mb-0 rounded-3 border-warning">
+            <i class="bi bi-exclamation-triangle-fill text-warning fs-5"></i>
+            <div class="small">
+              <strong>Aviso:</strong> Aún no tenés materias asignadas institucionalmente en el sistema. Podés reservar seleccionando del catálogo general.
+            </div>
+          </div>
         }
-      </select>
-      @if (campoInvalido('curso')) {
-        <div class="text-danger small mt-1">El curso es obligatorio.</div>
-      }
-    </div>
+      </div>
+    }
 
     <!-- MATERIA -->
     <div class="col-12 col-md-5">
       <label for="materia" class="form-label fw-semibold">
         <i class="bi bi-journal-bookmark me-1 text-primary"></i>Materia / Asignatura
+        @if (esDocente && tieneAsignaciones) {
+          <span class="badge bg-primary-subtle text-primary ms-1">Asignada</span>
+        }
       </label>
       <select id="materia" class="form-select" formControlName="materia">
         <option value="">Seleccionar materia...</option>
@@ -213,8 +221,24 @@
         <div class="text-danger small mt-1">La materia es obligatoria.</div>
       }
       <div class="text-muted small mt-1">
-        <i class="bi bi-info-circle me-1"></i>Tope: máx 3 reservas semanales por materia (HU05).
+        <i class="bi bi-info-circle me-1"></i>Tope: máx 3 reservas semanales por materia.
       </div>
+    </div>
+
+    <!-- CURSO -->
+    <div class="col-12 col-md-4">
+      <label for="curso" class="form-label fw-semibold">
+        <i class="bi bi-mortarboard me-1 text-primary"></i>Curso / Año
+      </label>
+      <select id="curso" class="form-select" formControlName="curso">
+        <option value="">Seleccionar curso...</option>
+        @for (c of cursosFiltradosPorMateria; track c) {
+          <option [value]="c">{{ c }}</option>
+        }
+      </select>
+      @if (campoInvalido('curso')) {
+        <div class="text-danger small mt-1">El curso es obligatorio.</div>
+      }
     </div>
 
     <!-- NETBOOKS -->

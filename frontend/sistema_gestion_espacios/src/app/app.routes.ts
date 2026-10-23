@@ -10,6 +10,7 @@ import { Salas } from './pages/dashboard-admin/salas/salas';
 import { Reservas } from './pages/dashboard-admin/reservas/reservas';
 import { Usuarios } from './pages/dashboard-admin/usuarios/usuarios';
 import { Reportes } from './pages/dashboard-admin/reportes/reportes';
+import { DocentesAdmin } from './pages/dashboard-admin/docentes/docentes';
 import { DashboardUser } from './pages/dashboard-user/dashboard-user';
 
 import { EspaciosDisponibles } from './pages/dashboard-user/espacios-disponibles/espacios-disponibles';
@@ -17,6 +18,7 @@ import { ReservarEspacio } from './pages/dashboard-user/reservar-espacio/reserva
 import { ReservasConfirmadas } from './pages/dashboard-user/reservas-confirmadas/reservas-confirmadas';
 import { HistorialReservas } from './pages/dashboard-user/historial-reservas/historial-reservas';
 import { AgendaSemanal } from './pages/dashboard-user/agenda-semanal/agenda-semanal';
+import { MiHorario } from './pages/dashboard-user/mi-horario/mi-horario';
 
 export const routes: Routes = [
   {
@@ -87,6 +89,14 @@ export const routes: Routes = [
       },
 
       {
+        path: 'docentes',
+        component: DocentesAdmin,
+        data: {
+          title: 'Gestión de Docentes y Horarios'
+        },
+      },
+
+      {
         path: 'reportes',
         component: Reportes,
         data: {
@@ -126,6 +136,11 @@ export const routes: Routes = [
         path: 'agenda',
         component: AgendaSemanal,
         data: { title: 'Agenda Semanal Unificada' },
+      },
+      {
+        path: 'horario',
+        component: MiHorario,
+        data: { title: 'Mi Horario y Carga Horaria' },
       },
       {
         path: 'historial',

@@ -40,7 +40,7 @@ export class ReservationService {
   private readonly CACHE_KEY = 'cached_reservas';
   private readonly PENDING_KEY = 'offline_reservas_pendientes';
 
-  // Reactividad para el estado offline y sincronización (HU06)
+  // Reactividad para el estado offline y sincronización
   public isOffline$ = new BehaviorSubject<boolean>(typeof navigator !== 'undefined' ? !navigator.onLine : false);
   public pendingSyncCount$ = new BehaviorSubject<number>(this.getPendingOfflineCount());
 
@@ -160,7 +160,7 @@ export class ReservationService {
     );
   }
 
-  // HU03 y HU06: Creación de reserva con soporte Offline en LocalStorage
+  // Creación de reserva con soporte Offline en LocalStorage
   createReservation(reservationData: Reservation | CreateReservationDto): Observable<Reservation> {
     const isOffline = typeof navigator !== 'undefined' && !navigator.onLine;
 
