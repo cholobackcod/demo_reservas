@@ -79,15 +79,7 @@
               </li>
             }
 
-            <li class="nav-item">
-              <a
-                class="nav-link text-secondary fw-semibold px-3 rounded-pill hover-bg-light"
-                [routerLink]="currentUser.rol === 'admin' ? '/dashboard/admin' : '/dashboard/user'"
-                routerLinkActive="active text-info fw-bold"
-              >
-                <i class="bi bi-speedometer2 me-1"></i> Panel ({{ currentUser.rol | titlecase }})
-              </a>
-            </li>
+            
 
             <li class="nav-item d-flex align-items-center ms-md-2 mt-2 mt-md-0">
               <span class="text-muted small me-3 fw-semibold">
@@ -115,4 +107,4 @@
     </div>
   </nav>
 </header>
-
+
