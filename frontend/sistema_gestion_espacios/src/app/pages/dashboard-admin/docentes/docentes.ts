@@ -60,6 +60,7 @@ export class DocentesAdmin implements OnInit {
   errorAsignacion = '';
   guardandoAsignacion = false;
   advertenciaSuperposicion = '';
+  infoCatedraCompartida = '';
 
   // Modal Restablecer Password
   modalResetPasswordVisible = false;
@@ -143,6 +144,7 @@ export class DocentesAdmin implements OnInit {
     });
 
     this.cargarDocentes();
+    this.cargarTodasAsignaciones();
   }
 
   cargarDocentes(): void {
@@ -367,6 +369,7 @@ export class DocentesAdmin implements OnInit {
     this.editingAsignacionId = null;
     this.errorAsignacion = '';
     this.advertenciaSuperposicion = '';
+    this.infoCatedraCompartida = '';
 
     const targetDocenteId = docenteId || this.docenteSeleccionado?.id || (this.docentes[0]?.id || '');
 
@@ -383,12 +386,14 @@ export class DocentesAdmin implements OnInit {
     });
 
     this.modalAsignacionVisible = true;
+    this.detectarSuperposicionEnVivo();
   }
 
   abrirEditarAsignacion(a: AsignacionDocente): void {
     this.editingAsignacionId = a.id!;
     this.errorAsignacion = '';
     this.advertenciaSuperposicion = '';
+    this.infoCatedraCompartida = '';
 
     this.asignacionForm.patchValue({
       docenteId: a.docenteId,
@@ -403,6 +408,7 @@ export class DocentesAdmin implements OnInit {
     });
 
     this.modalAsignacionVisible = true;
+    this.detectarSuperposicionEnVivo();
   }
 
   cerrarModalAsignacion(): void {
@@ -410,11 +416,13 @@ export class DocentesAdmin implements OnInit {
     this.editingAsignacionId = null;
     this.errorAsignacion = '';
     this.advertenciaSuperposicion = '';
+    this.infoCatedraCompartida = '';
   }
 
   // Detector en vivo de superposiciones antes de guardar
   detectarSuperposicionEnVivo(): void {
     this.advertenciaSuperposicion = '';
+    this.infoCatedraCompartida = '';
     const val = this.asignacionForm.value;
     if (!val.docenteId || !val.dia_semana || !val.hora_inicio || !val.hora_fin) return;
 
@@ -423,16 +431,37 @@ export class DocentesAdmin implements OnInit {
       return;
     }
 
+    // 1. Detección de conflicto horario para el mismo docente (no puede superponerse consigo mismo)
     const doc = this.docentes.find(d => String(d.id) === String(val.docenteId));
     if (doc && doc.asignaciones) {
-      const conflict = doc.asignaciones.find(a => {
+      const conflictDoc = doc.asignaciones.find(a => {
         if (this.editingAsignacionId && String(a.id) === String(this.editingAsignacionId)) return false;
         if (a.dia_semana !== val.dia_semana) return false;
         return val.hora_inicio < a.hora_fin && val.hora_fin > a.hora_inicio;
       });
 
-      if (conflict) {
-        this.advertenciaSuperposicion = `⚠️ Alerta de superposición: El docente ya tiene asignada '${conflict.materiaNombre}' (${conflict.cursoNombre}) el ${val.dia_semana} de ${conflict.hora_inicio} a ${conflict.hora_fin} hs.`;
+      if (conflictDoc) {
+        this.advertenciaSuperposicion = `⚠️ Superposición del docente: ${doc.nombre} ${doc.apellido} ya tiene asignada '${conflictDoc.materiaNombre}' (${conflictDoc.cursoNombre}) el ${val.dia_semana} de ${conflictDoc.hora_inicio} a ${conflictDoc.hora_fin} hs.`;
+        return;
+      }
+    }
+
+    // 2. Comprobar asignaciones existentes para el curso (Cátedra Compartida vs Conflicto de curso)
+    if (val.cursoId && this.todasAsignaciones && this.todasAsignaciones.length > 0) {
+      const conflictCurso = this.todasAsignaciones.find(a => {
+        if (this.editingAsignacionId && String(a.id) === String(this.editingAsignacionId)) return false;
+        if (String(a.cursoId) !== String(val.cursoId)) return false;
+        if (a.dia_semana !== val.dia_semana) return false;
+        if (String(a.docenteId) === String(val.docenteId)) return false;
+        return val.hora_inicio < a.hora_fin && val.hora_fin > a.hora_inicio;
+      });
+
+      if (conflictCurso) {
+        if (val.materiaId && String(conflictCurso.materiaId) === String(val.materiaId)) {
+          this.infoCatedraCompartida = `ℹ️ Cátedra Compartida detectada: El curso ya tiene asignada '${conflictCurso.materiaNombre}' con ${conflictCurso.docenteNombre} en este horario. Al guardar, ambos docentes compartirán la cátedra (pareja pedagógica) y computarán sus horas.`;
+        } else if (val.materiaId) {
+          this.advertenciaSuperposicion = `⚠️ Conflicto de curso: El curso ya tiene asignada la materia distinta '${conflictCurso.materiaNombre}' con ${conflictCurso.docenteNombre} el ${val.dia_semana} de ${conflictCurso.hora_inicio} a ${conflictCurso.hora_fin} hs.`;
+        }
       }
     }
   }

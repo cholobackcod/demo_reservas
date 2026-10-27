@@ -351,7 +351,16 @@
             <tbody>
               @for (a of asignacionesFiltradas; track a.id) {
                 <tr>
-                  <td><strong>{{ a.docenteNombre }}</strong></td>
+                  <td>
+                    <strong>{{ a.docenteNombre }}</strong>
+                    @if (a.esCatedraCompartida) {
+                      <div>
+                        <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle" style="font-size: 0.65rem;" [title]="'Cátedra Compartida con: ' + (a.coDocentes?.join(', ') || '')">
+                          <i class="bi bi-people-fill me-1"></i>Cátedra Compartida (con {{ a.coDocentes?.join(', ') }})
+                        </span>
+                      </div>
+                    }
+                  </td>
                   <td>{{ a.materiaNombre }}</td>
                   <td><span class="badge bg-light text-dark border">{{ a.cursoNombre }}</span></td>
                   <td class="text-capitalize">{{ a.dia_semana }}</td>
@@ -503,6 +512,13 @@
                           <div class="fw-bold text-dark small text-truncate" [title]="b.materiaNombre">
                             {{ b.materiaNombre }}
                           </div>
+                          @if (b.esCatedraCompartida) {
+                            <div>
+                              <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle" style="font-size: 0.65rem;" [title]="'Cátedra Compartida con: ' + (b.coDocentes?.join(', ') || '')">
+                                <i class="bi bi-people-fill me-1"></i>Compartida ({{ b.coDocentes?.join(', ') }})
+                              </span>
+                            </div>
+                          }
                           <div class="text-primary small fw-semibold">
                             <i class="bi bi-mortarboard me-1"></i>{{ b.cursoNombre }}
                           </div>
@@ -545,7 +561,14 @@
               <tbody>
                 @for (a of docenteSeleccionado.asignaciones; track a.id) {
                   <tr>
-                    <td><strong>{{ a.materiaNombre }}</strong></td>
+                    <td>
+                      <strong>{{ a.materiaNombre }}</strong>
+                      @if (a.esCatedraCompartida) {
+                        <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle ms-1" style="font-size: 0.68rem;" [title]="'Co-docente(s): ' + (a.coDocentes?.join(', ') || '')">
+                          <i class="bi bi-people-fill me-1"></i>Compartida ({{ a.coDocentes?.join(', ') }})
+                        </span>
+                      }
+                    </td>
                     <td>{{ a.cursoNombre }}</td>
                     <td class="text-capitalize">{{ a.dia_semana }}</td>
                     <td><span class="badge bg-primary-subtle text-primary">{{ a.hora_inicio }} a {{ a.hora_fin }} hs</span></td>
@@ -606,6 +629,12 @@
             @if (advertenciaSuperposicion) {
               <div class="alert alert-warning py-2 mb-3 shadow-sm border-warning" role="alert">
                 <i class="bi bi-exclamation-circle-fill me-2"></i>{{ advertenciaSuperposicion }}
+              </div>
+            }
+
+            @if (infoCatedraCompartida) {
+              <div class="alert alert-info py-2 mb-3 shadow-sm border-info" role="alert">
+                <i class="bi bi-people-fill me-2"></i>{{ infoCatedraCompartida }}
               </div>
             }
 

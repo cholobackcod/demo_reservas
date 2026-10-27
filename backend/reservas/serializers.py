@@ -84,7 +84,7 @@ class ReservaSerializer(serializers.ModelSerializer):
                     inicio_local.time() >= hora_cierre or 
                     fin_local.time() > hora_cierre or 
                     fin_local.time() <= hora_apertura):
-                    mensaje_fuera_horario = "No es posible realizar reservas fuera del horario escolar (07:00 a 18:00 hs)."
+                    mensaje_fuera_horario = "No es posible realizar esa reserva: No es posible realizar reservas fuera del horario escolar (07:00 a 18:00 hs)."
                     raise serializers.ValidationError({
                         "horario_escolar": mensaje_fuera_horario,
                         "non_field_errors": [mensaje_fuera_horario]
@@ -108,13 +108,13 @@ class ReservaSerializer(serializers.ModelSerializer):
                         reservas_materia = reservas_materia.exclude(pk=self.instance.pk)
 
                     if reservas_materia.count() >= TOPE_SEMANAL_MATERIA:
-                        mensaje_tope = f"Se ha alcanzado el tope semanal de {TOPE_SEMANAL_MATERIA} reservas para la materia '{materia}'."
+                        mensaje_tope = f"No es posible realizar esa reserva: se ha alcanzado el tope semanal de {TOPE_SEMANAL_MATERIA} reservas para la materia '{materia}'."
                         raise serializers.ValidationError({
                             "materia": mensaje_tope,
                             "non_field_errors": [mensaje_tope]
                         })
 
-                # Validación de Asignación Docente: Un docente sólo puede reservar en materias y cursos asignados
+                # Validación de Asignación Docente: Un docente sólo puede reservar en materias, cursos, días y horarios asignados
                 usuario_reserva = data.get('usuario', getattr(self.instance, 'usuario', None))
                 curso_reserva = data.get('curso', getattr(self.instance, 'curso', ''))
                 if usuario_reserva and usuario_reserva.rol == 'docente' and materia and str(materia).strip():
@@ -123,7 +123,7 @@ class ReservaSerializer(serializers.ModelSerializer):
                     if asignaciones_doc.exists():
                         match_mat = asignaciones_doc.filter(materia__nombre__iexact=str(materia).strip())
                         if not match_mat.exists():
-                            msg_mat = f"El docente no tiene asignada la materia '{materia}'. Solo puede reservar en espacios curriculares asignados."
+                            msg_mat = f"No es posible realizar esa reserva: el docente no tiene asignada la materia '{materia}'."
                             raise serializers.ValidationError({
                                 "materia": msg_mat,
                                 "non_field_errors": [msg_mat]
@@ -131,11 +131,34 @@ class ReservaSerializer(serializers.ModelSerializer):
                         if curso_reserva and str(curso_reserva).strip():
                             match_cur = match_mat.filter(curso__nombre__iexact=str(curso_reserva).strip())
                             if not match_cur.exists():
-                                msg_cur = f"El docente no tiene asignado el curso '{curso_reserva}' para la materia '{materia}'."
+                                msg_cur = f"No es posible realizar esa reserva: el docente no tiene asignado el curso '{curso_reserva}' para la materia '{materia}'."
                                 raise serializers.ValidationError({
                                     "curso": msg_cur,
                                     "non_field_errors": [msg_cur]
                                 })
+
+                        dias_map = {0: 'lunes', 1: 'martes', 2: 'miercoles', 3: 'jueves', 4: 'viernes', 5: 'sabado', 6: 'domingo'}
+                        dia_semana_reserva = dias_map.get(inicio_local.weekday(), '')
+                        match_dia = match_mat.filter(dia_semana=dia_semana_reserva)
+                        if not match_dia.exists():
+                            msg_dia = f"No es posible realizar esa reserva: no tienes clases asignadas los días {dia_semana_reserva}. Solo podés reservar en los días y horarios en los que das clase."
+                            raise serializers.ValidationError({
+                                "horario": msg_dia,
+                                "inicio": msg_dia,
+                                "non_field_errors": [msg_dia]
+                            })
+
+                        horario_valido = False
+                        for asig in match_dia:
+                            if inicio_local.time() >= asig.hora_inicio and fin_local.time() <= asig.hora_fin:
+                                horario_valido = True
+                                break
+                        if not horario_valido:
+                            msg_horario = f"No es posible realizar esa reserva: el horario solicitado está fuera del horario en el que das clase ({dia_semana_reserva}). Solo puedes reservar dentro de tu horario escolar oficial."
+                            raise serializers.ValidationError({
+                                "horario": msg_horario,
+                                "non_field_errors": [msg_horario]
+                            })
 
                 # Paso 22: SELECT reservas confirmadas solapadas (sala, inicio, fin)
                 if sala:

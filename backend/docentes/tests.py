@@ -307,3 +307,43 @@ class DocentesGestionTestCase(TestCase):
         self.assertTrue(res.data['tieneAsignaciones'])
         self.assertEqual(len(res.data['materias']), 1)
         self.assertEqual(res.data['materias'][0]['nombre'], 'Programación II')
+
+    def test_11_catedra_compartida_permitida_misma_materia(self):
+        """Caso 11: Dos docentes distintos pueden dar la misma clase (cátedra compartida / pareja pedagógica)."""
+        # Docente 1 asignado
+        asig1 = AsignacionDocente.objects.create(
+            docente=self.docente,
+            materia=self.materia_prog2,
+            curso=self.curso_4to,
+            dia_semana='miercoles',
+            hora_inicio=datetime.time(9, 30),
+            hora_fin=datetime.time(10, 10),
+            ciclo_lectivo='2026'
+        )
+
+        # Docente 2 para la MISMA materia, curso y horario
+        docente2 = Usuario.objects.create(
+            nombre='Giselda',
+            apellido='Mondadori',
+            email='giselda@demo.com',
+            password='pass',
+            rol='docente'
+        )
+        res_catedra = self.client.post('/api/v1/asignaciones/', {
+            'docenteId': docente2.id,
+            'materiaId': self.materia_prog2.id,
+            'cursoId': self.curso_4to.id,
+            'dia_semana': 'miercoles',
+            'hora_inicio': '09:30',
+            'hora_fin': '10:10',
+            'ciclo_lectivo': '2026'
+        }, format='json')
+
+        self.assertEqual(res_catedra.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(res_catedra.data.get('esCatedraCompartida'))
+        self.assertIn(f"{self.docente.nombre} {self.docente.apellido}".strip(), res_catedra.data.get('coDocentes', []))
+
+        # El Docente 1 también ahora tiene esCatedraCompartida=True
+        asig1.refresh_from_db()
+        self.assertTrue(asig1.es_catedra_compartida)
+        self.assertIn('Giselda Mondadori', asig1.co_docentes)

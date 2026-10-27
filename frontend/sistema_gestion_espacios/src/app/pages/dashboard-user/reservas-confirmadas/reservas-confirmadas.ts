@@ -67,7 +67,9 @@ export class ReservasConfirmadas implements OnInit {
   ];
 
   materiasDisponibles: string[] = [
-    'Programación',
+    'Programación II',
+    'Programación III',
+    'Programación IV',
     'Bases de Datos',
     'Sistemas Operativos',
     'Redes y Telecomunicaciones',

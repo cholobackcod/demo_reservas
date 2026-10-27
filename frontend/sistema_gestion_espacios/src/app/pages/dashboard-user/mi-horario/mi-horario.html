@@ -167,6 +167,13 @@
                         <div class="fw-bold text-dark small text-truncate" [title]="b.materiaNombre">
                           {{ b.materiaNombre }}
                         </div>
+                        @if (b.esCatedraCompartida) {
+                          <div>
+                            <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle" style="font-size: 0.65rem;" [title]="'Cátedra Compartida con: ' + (b.coDocentes?.join(', ') || '')">
+                              <i class="bi bi-people-fill me-1"></i>Compartida ({{ b.coDocentes?.join(', ') }})
+                            </span>
+                          </div>
+                        }
                         <div class="text-primary small fw-semibold">
                           <i class="bi bi-mortarboard me-1"></i>{{ b.cursoNombre }}
                         </div>
@@ -175,7 +182,7 @@
                         </div>
                         <a
                           [routerLink]="['/dashboard/user/reservar']"
-                          [queryParams]="{ materia: b.materiaNombre, curso: b.cursoNombre, horaDesde: b.hora_inicio, horaHasta: b.hora_fin }"
+                          [queryParams]="{ materia: b.materiaNombre, curso: b.cursoNombre, horaDesde: b.hora_inicio, horaHasta: b.hora_fin, dia: b.dia_semana || d.key }"
                           class="btn btn-sm btn-outline-primary w-100 mt-2 py-0 d-flex align-items-center justify-content-center gap-1"
                           style="font-size: 0.72rem; line-height: 1.6;"
                           title="Reservar laboratorio escolar para esta clase"
@@ -220,7 +227,14 @@
           <tbody>
             @for (a of horarioData.asignaciones; track a.id) {
               <tr>
-                <td><strong>{{ a.materiaNombre }}</strong></td>
+                <td>
+                  <strong>{{ a.materiaNombre }}</strong>
+                  @if (a.esCatedraCompartida) {
+                    <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle ms-1" style="font-size: 0.68rem;" [title]="'Cátedra Compartida con: ' + (a.coDocentes?.join(', ') || '')">
+                      <i class="bi bi-people-fill me-1"></i>Compartida ({{ a.coDocentes?.join(', ') }})
+                    </span>
+                  }
+                </td>
                 <td><span class="badge bg-light text-dark border">{{ a.cursoNombre }}</span></td>
                 <td class="text-capitalize">{{ a.dia_semana }}</td>
                 <td><span class="badge bg-primary-subtle text-primary">{{ a.hora_inicio }} a {{ a.hora_fin }} hs</span></td>
@@ -230,7 +244,7 @@
                 <td class="text-end pe-3">
                   <a
                     [routerLink]="['/dashboard/user/reservar']"
-                    [queryParams]="{ materia: a.materiaNombre, curso: a.cursoNombre, horaDesde: a.hora_inicio, horaHasta: a.hora_fin }"
+                    [queryParams]="{ materia: a.materiaNombre, curso: a.cursoNombre, horaDesde: a.hora_inicio, horaHasta: a.hora_fin, dia: a.dia_semana }"
                     class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 py-1 px-2 shadow-sm"
                     style="font-size: 0.78rem;"
                     title="Reservar laboratorio para esta clase"
@@ -316,7 +330,14 @@
               <td class="fw-bold text-capitalize text-center">{{ a.dia_semana }}</td>
               <td class="text-center fw-semibold">{{ a.hora_inicio }} - {{ a.hora_fin }} hs</td>
               <td class="text-center">{{ a.duracionMinutos }} min</td>
-              <td><strong>{{ a.materiaNombre }}</strong></td>
+              <td>
+                <strong>{{ a.materiaNombre }}</strong>
+                @if (a.esCatedraCompartida) {
+                  <span class="badge bg-light text-dark border ms-1" style="font-size: 0.65rem;">
+                    (Compartida con {{ a.coDocentes?.join(', ') }})
+                  </span>
+                }
+              </td>
               <td class="text-center">{{ a.cursoNombre }}</td>
               <td class="text-center">{{ a.tipo_actividad }}</td>
               <td style="min-width: 120px;">{{ a.observaciones }}</td>

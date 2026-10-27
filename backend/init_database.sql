@@ -160,7 +160,7 @@ INSERT INTO docentes_materia (id, nombre, codigo, tipo_predeterminado, activa) V
 (1, 'Programación II', '', 'materia', 1),
 (2, 'Diseño de Interfaces y Usabilidad I', '', 'materia', 1),
 (3, 'Diseño de Interfaces y Usabilidad', '', 'materia', 1),
-(4, 'Programación', '', 'materia', 1),
+(4, 'Programación III', '', 'materia', 1),
 (5, 'Ética y Legislación', '', 'materia', 1),
 (6, 'Estructura y Almacenam. de Datos', '', 'materia', 1),
 (7, 'Algoritmos y Programación', '', 'materia', 1),
@@ -204,14 +204,15 @@ INSERT INTO docentes_materia (id, nombre, codigo, tipo_predeterminado, activa) V
 (45, 'Club de Arte', '', 'club', 1),
 (46, 'Club de Deportes', '', 'club', 1),
 (47, 'Filosofía', '', 'materia', 1),
-(48, 'Psicología', '', 'materia', 1)
+(48, 'Psicología', '', 'materia', 1),
+(49, 'Programación IV', '', 'materia', 1)
 ON DUPLICATE KEY UPDATE nombre=VALUES(nombre);
 
 -- 6. ASIGNACIONES DOCENTES (HORARIOS Y ESPACIOS CURRICULARES)
 INSERT INTO docentes_asignaciondocente (id, docente_id, materia_id, curso_id, dia_semana, hora_inicio, hora_fin, tipo_actividad, ciclo_lectivo, observaciones) VALUES
 (1, 4, 1, 4, 'lunes', '10:20:00', '12:00:00', 'materia', '2026', 'Horario asignado oficial ProA Capital Norte'),
 (2, 4, 2, 4, 'lunes', '12:10:00', '12:50:00', 'materia', '2026', 'Horario asignado oficial ProA Capital Norte'),
-(3, 4, 4, 4, 'martes', '12:45:00', '13:45:00', 'materia', '2026', 'Horario asignado oficial ProA Capital Norte'),
+(3, 4, 1, 4, 'martes', '12:45:00', '13:45:00', 'materia', '2026', 'Horario asignado oficial ProA Capital Norte'),
 (4, 4, 5, 5, 'miercoles', '09:30:00', '10:10:00', 'materia', '2026', 'Horario asignado oficial ProA Capital Norte'),
 (5, 4, 3, 4, 'jueves', '11:30:00', '12:50:00', 'materia', '2026', 'Horario asignado oficial ProA Capital Norte'),
 (6, 4, 6, 4, 'viernes', '12:40:00', '13:40:00', 'materia', '2026', 'Horario asignado oficial ProA Capital Norte'),
@@ -225,13 +226,14 @@ INSERT INTO docentes_asignaciondocente (id, docente_id, materia_id, curso_id, di
 (14, 6, 14, 5, 'lunes', '08:50:00', '10:10:00', 'materia', '2026', 'Horario asignado oficial ProA Capital Norte'),
 (15, 6, 14, 3, 'martes', '08:40:00', '10:20:00', 'materia', '2026', 'Horario asignado oficial ProA Capital Norte'),
 (16, 6, 14, 6, 'martes', '10:40:00', '12:00:00', 'materia', '2026', 'Horario asignado oficial ProA Capital Norte'),
-(17, 7, 4, 6, 'lunes', '08:50:00', '10:10:00', 'materia', '2026', 'Horario asignado oficial ProA Capital Norte'),
+(17, 7, 49, 6, 'lunes', '08:50:00', '10:10:00', 'materia', '2026', 'Horario asignado oficial ProA Capital Norte'),
 (18, 7, 11, 5, 'miercoles', '11:50:00', '12:50:00', 'materia', '2026', 'Horario asignado oficial ProA Capital Norte'),
-(19, 7, 12, 6, 'miercoles', '10:20:00', '11:40:00', 'materia', '2026', 'Horario asignado oficial ProA Capital Norte')
+(19, 7, 12, 6, 'miercoles', '10:20:00', '11:40:00', 'materia', '2026', 'Horario asignado oficial ProA Capital Norte'),
+(20, 7, 4, 5, 'jueves', '08:50:00', '10:10:00', 'materia', '2026', 'Horario asignado oficial ProA Capital Norte')
 ON DUPLICATE KEY UPDATE dia_semana=VALUES(dia_semana);
 
 -- 7. RESERVAS DE LABORATORIO
 INSERT INTO reservas_reserva (id, usuario_id, sala_id, inicio, fin, curso, materia, netbooks, estado) VALUES
-(1, 2, 1, '2026-10-15 09:00:00', '2026-10-15 11:00:00', '4° Año Informática', 'Programación', 25, 'confirmada'),
+(1, 2, 1, '2026-10-15 09:00:00', '2026-10-15 11:00:00', '4° Año Informática', 'Programación II', 25, 'confirmada'),
 (2, 3, 2, '2026-10-16 14:00:00', '2026-10-16 17:00:00', '5° Año Informática', 'Redes y Telecomunicaciones', 20, 'confirmada')
 ON DUPLICATE KEY UPDATE estado=VALUES(estado);

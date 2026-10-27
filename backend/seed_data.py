@@ -40,9 +40,10 @@ def seed():
     # 3. Catálogo de Materias / Espacios Curriculares
     materias_data = [
         ('Programación II', 'materia'),
+        ('Programación III', 'materia'),
+        ('Programación IV', 'materia'),
         ('Diseño de Interfaces y Usabilidad I', 'materia'),
         ('Diseño de Interfaces y Usabilidad', 'materia'),
-        ('Programación', 'materia'),
         ('Ética y Legislación', 'materia'),
         ('Estructura y Almacenam. de Datos', 'materia'),
         ('Algoritmos y Programación', 'materia'),
@@ -158,8 +159,8 @@ def seed():
         (docente_bianchi, 'Programación II', '4° Año Informática', 'lunes', '10:20', '12:00', 'materia'),
         # Lunes: 12:10 a 12:50 (40 min) - Diseño de Interfaces y Usabilidad I (4° Año Informática)
         (docente_bianchi, 'Diseño de Interfaces y Usabilidad I', '4° Año Informática', 'lunes', '12:10', '12:50', 'materia'),
-        # Martes: 12:45 a 13:45 (60 min) - Programación (4° Año Informática)
-        (docente_bianchi, 'Programación', '4° Año Informática', 'martes', '12:45', '13:45', 'materia'),
+        # Martes: 12:45 a 13:45 (60 min) - Programación II (4° Año Informática)
+        (docente_bianchi, 'Programación II', '4° Año Informática', 'martes', '12:45', '13:45', 'materia'),
         # Miércoles: 09:30 a 10:10 (40 min) - Ética y Legislación (5° Año Informática)
         (docente_bianchi, 'Ética y Legislación', '5° Año Informática', 'miercoles', '09:30', '10:10', 'materia'),
         # Jueves: 11:30 a 12:50 (80 min) - Diseño de Interfaces y Usabilidad (4° Año Informática)
@@ -182,11 +183,15 @@ def seed():
         (docente_riquel, 'Matemática', '3° Año', 'martes', '08:40', '10:20', 'materia'), # 100 min
         (docente_riquel, 'Matemática', '6° Año Informática', 'martes', '10:40', '12:00', 'materia'), # 80 min
 
-        # --- Santiago Ferreyra Lazcano (Programación, Robótica, Testing) ---
-        (docente_santiago, 'Programación', '6° Año Informática', 'lunes', '08:50', '10:10', 'materia'), # 80 min
+        # --- Santiago Ferreyra Lazcano (Programación III y IV, Robótica, Testing) ---
+        (docente_santiago, 'Programación III', '5° Año Informática', 'jueves', '08:50', '10:10', 'materia'), # 80 min
+        (docente_santiago, 'Programación IV', '6° Año Informática', 'lunes', '08:50', '10:10', 'materia'), # 80 min
         (docente_santiago, 'Robótica', '5° Año Informática', 'miercoles', '11:50', '12:50', 'materia'), # 60 min
         (docente_santiago, 'Testing', '6° Año Informática', 'miercoles', '10:20', '11:40', 'materia'), # 80 min
     ]
+
+    # Limpiar asignaciones previas para reflejar la distribución actualizada de materias
+    AsignacionDocente.objects.all().delete()
 
     for doc, mat_nom, cur_nom, dia, hi, hf, tipo in asignaciones_raw:
         materia_obj = materias_dict[mat_nom]

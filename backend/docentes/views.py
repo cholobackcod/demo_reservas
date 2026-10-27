@@ -174,12 +174,15 @@ class DocenteMateriasAsignadasAPIView(APIView):
                 'cursoNombre': a.curso.nombre
             })
 
+        asignaciones_data = AsignacionDocenteSerializer(asignaciones, many=True).data
+
         return Response({
             'docenteId': docente.id,
             'docenteNombre': f"{docente.nombre} {docente.apellido}".strip(),
             'materias': [{'id': k, 'nombre': v} for k, v in materias_dict.items()],
             'cursos': [{'id': k, 'nombre': v} for k, v in cursos_dict.items()],
             'relaciones': relaciones,
+            'asignaciones': asignaciones_data,
             'tieneAsignaciones': asignaciones.exists()
         }, status=status.HTTP_200_OK)
 

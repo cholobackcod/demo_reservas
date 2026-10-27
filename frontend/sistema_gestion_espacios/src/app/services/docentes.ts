@@ -43,6 +43,8 @@ export interface AsignacionDocente {
   tipo_actividad?: 'materia' | 'tutoria' | 'taller' | 'club';
   ciclo_lectivo?: string;
   observaciones?: string;
+  esCatedraCompartida?: boolean;
+  coDocentes?: string[];
   fecha_creacion?: string;
 }
 

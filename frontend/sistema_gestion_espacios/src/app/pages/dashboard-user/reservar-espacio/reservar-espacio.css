@@ -39,3 +39,242 @@ form {
   border-color: #0d6efd;
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
 }
+
+/* CALENDARIO MENSUAL */
+.calendario-grid-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.calendario-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.calendario-celda {
+  min-height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background-color: #ffffff;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.15s ease-in-out;
+  user-select: none;
+}
+
+.calendario-celda:hover:not(.dia-pasado):not(.dia-otro-mes) {
+  border-color: #0d6efd;
+  background-color: #f0f7ff;
+  transform: translateY(-1px);
+}
+
+.calendario-celda .dia-numero {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.calendario-celda.dia-hoy {
+  border-color: #0d6efd;
+  border-width: 2px;
+}
+
+.calendario-celda.dia-con-clases {
+  background-color: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.calendario-celda.dia-seleccionado {
+  background-color: #0d6efd !important;
+  color: #ffffff !important;
+  border-color: #0d6efd !important;
+  box-shadow: 0 4px 6px -1px rgba(13, 110, 253, 0.3);
+}
+
+.calendario-celda.dia-seleccionado .dot-clase {
+  background-color: #ffffff;
+}
+
+.calendario-celda.dia-pasado {
+  opacity: 0.4;
+  background-color: #f8fafc;
+  cursor: not-allowed;
+}
+
+.calendario-celda.dia-otro-mes {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.calendario-celda.dia-finde {
+  background-color: #f8fafc;
+}
+
+.calendario-celda.dia-deshabilitado {
+  opacity: 0.25;
+  background-color: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+  cursor: not-allowed !important;
+}
+
+.dot-clase {
+  width: 6px;
+  height: 6px;
+  background-color: #198754;
+  border-radius: 50%;
+  margin-top: 3px;
+}
+
+/* CARDS DE CLASES ESCOLARES */
+.clase-horario-btn {
+  transition: all 0.2s ease-in-out;
+  border: 2px solid #e2e8f0;
+  background-color: #ffffff;
+  text-align: left;
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.clase-horario-btn:hover {
+  border-color: #0d6efd;
+  background-color: #f0f7ff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(13, 110, 253, 0.12);
+}
+
+.clase-horario-btn.activa {
+  border-color: #0d6efd;
+  background-color: #eff6ff;
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+}
+
+/* FICHA OFICIAL DE RESERVA */
+.ficha-oficial-reserva {
+  border: 1px solid #bfdbfe;
+  background: linear-gradient(180deg, #f8fafc 0%, #f0f7ff 100%);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.ficha-dato-item {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+/* NAVEGACIÓN RÁPIDA / ANCLAS */
+html {
+  scroll-behavior: smooth;
+}
+
+.nav-anchor-pill {
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  border: 1px solid #e2e8f0;
+  background-color: #ffffff;
+  color: #334155;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-anchor-pill:hover {
+  background-color: #eff6ff;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+/* TARJETAS DE LABORATORIOS DISPONIBLES */
+.lab-card-unificada {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.lab-card-unificada:hover {
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px -4px rgba(59, 130, 246, 0.15);
+}
+
+.lab-card-unificada.seleccionada {
+  border-color: #2563eb;
+  background-color: #f8faff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+}
+
+/* AGENDA SEMANAL INTEGRADA */
+.agenda-table {
+  table-layout: fixed;
+}
+
+.dia-hoy {
+  background-color: #eff6ff !important;
+}
+
+.cell-hoy {
+  background-color: #f8faff;
+}
+
+.cell-slot {
+  height: 68px;
+  vertical-align: middle;
+}
+
+.slot-card {
+  height: 100%;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.occupied-card {
+  background-color: #fff5f5;
+  border-left: 3px solid #dc3545 !important;
+}
+
+.occupied-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.15);
+}
+
+.free-card {
+  background-color: #f6fff9;
+  border: 1px dashed #28a745 !important;
+  cursor: pointer;
+}
+
+.free-card:hover {
+  background-color: #e8f9ed;
+  border-style: solid !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.15);
+}
+
+.btn-reservar-link {
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.legend-box {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  display: inline-block;
+}

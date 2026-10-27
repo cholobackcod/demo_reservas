@@ -42,6 +42,8 @@ class AsignacionDocenteSerializer(serializers.ModelSerializer):
     cursoNombre = serializers.SerializerMethodField(read_only=True)
     duracionMinutos = serializers.IntegerField(source='duracion_minutos', read_only=True)
     duracionHorasFormato = serializers.CharField(source='duracion_horas_formato', read_only=True)
+    esCatedraCompartida = serializers.BooleanField(source='es_catedra_compartida', read_only=True)
+    coDocentes = serializers.ListField(child=serializers.CharField(), source='co_docentes', read_only=True)
     hora_inicio = serializers.TimeField(format='%H:%M', input_formats=['%H:%M', '%H:%M:%S'])
     hora_fin = serializers.TimeField(format='%H:%M', input_formats=['%H:%M', '%H:%M:%S'])
 
@@ -52,7 +54,7 @@ class AsignacionDocenteSerializer(serializers.ModelSerializer):
             'materiaId', 'materiaNombre', 'cursoId', 'cursoNombre',
             'dia_semana', 'hora_inicio', 'hora_fin', 'duracionMinutos',
             'duracionHorasFormato', 'tipo_actividad', 'ciclo_lectivo',
-            'observaciones', 'fecha_creacion'
+            'observaciones', 'esCatedraCompartida', 'coDocentes', 'fecha_creacion'
         ]
 
     def get_docenteNombre(self, obj):
@@ -73,6 +75,7 @@ class AsignacionDocenteSerializer(serializers.ModelSerializer):
         hora_inicio = data.get('hora_inicio', getattr(self.instance, 'hora_inicio', None))
         hora_fin = data.get('hora_fin', getattr(self.instance, 'hora_fin', None))
         docente = data.get('docente', getattr(self.instance, 'docente', None))
+        materia = data.get('materia', getattr(self.instance, 'materia', None))
         curso = data.get('curso', getattr(self.instance, 'curso', None))
         dia_semana = data.get('dia_semana', getattr(self.instance, 'dia_semana', None))
         ciclo_lectivo = data.get('ciclo_lectivo', getattr(self.instance, 'ciclo_lectivo', '2026'))
@@ -103,6 +106,7 @@ class AsignacionDocenteSerializer(serializers.ModelSerializer):
                     })
 
             # Validar superposiciones para el curso
+            # Se permite Cátedra Compartida para la misma materia en el mismo horario.
             if curso and dia_semana:
                 overlap_cur = AsignacionDocente.objects.filter(
                     curso=curso,
@@ -111,6 +115,8 @@ class AsignacionDocenteSerializer(serializers.ModelSerializer):
                     hora_inicio__lt=hora_fin,
                     hora_fin__gt=hora_inicio
                 )
+                if materia:
+                    overlap_cur = overlap_cur.exclude(materia=materia)
                 if self.instance:
                     overlap_cur = overlap_cur.exclude(pk=self.instance.pk)
 

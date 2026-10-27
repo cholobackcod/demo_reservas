@@ -190,6 +190,33 @@ class AsignacionDocente(models.Model):
             return f"{horas}h"
         return f"{mins}m"
 
+    @property
+    def es_catedra_compartida(self):
+        if not self.pk or not self.curso_id or not self.materia_id or not self.hora_inicio or not self.hora_fin:
+            return False
+        return AsignacionDocente.objects.filter(
+            curso_id=self.curso_id,
+            materia_id=self.materia_id,
+            dia_semana=self.dia_semana,
+            ciclo_lectivo=self.ciclo_lectivo,
+            hora_inicio__lt=self.hora_fin,
+            hora_fin__gt=self.hora_inicio
+        ).exclude(pk=self.pk).exists()
+
+    @property
+    def co_docentes(self):
+        if not self.pk or not self.curso_id or not self.materia_id or not self.hora_inicio or not self.hora_fin:
+            return []
+        co_asigs = AsignacionDocente.objects.filter(
+            curso_id=self.curso_id,
+            materia_id=self.materia_id,
+            dia_semana=self.dia_semana,
+            ciclo_lectivo=self.ciclo_lectivo,
+            hora_inicio__lt=self.hora_fin,
+            hora_fin__gt=self.hora_inicio
+        ).exclude(pk=self.pk).select_related('docente')
+        return [f"{a.docente.nombre} {a.docente.apellido}".strip() for a in co_asigs if a.docente]
+
     def clean(self):
         super().clean()
         if self.hora_inicio and self.hora_fin:
@@ -216,6 +243,9 @@ class AsignacionDocente(models.Model):
                 })
 
             # 2. Detección de superposiciones horarias para el mismo curso
+            # Se permite Cátedra Compartida (pareja pedagógica): dos docentes distintos
+            # impartiendo la misma materia al mismo curso en el mismo horario.
+            # Solo se genera conflicto si el curso ya tiene asignada OTRA materia diferente.
             overlap_curso = AsignacionDocente.objects.filter(
                 curso=self.curso,
                 dia_semana=self.dia_semana,
@@ -223,6 +253,8 @@ class AsignacionDocente(models.Model):
                 hora_inicio__lt=self.hora_fin,
                 hora_fin__gt=self.hora_inicio
             )
+            if self.materia_id:
+                overlap_curso = overlap_curso.exclude(materia_id=self.materia_id)
             if self.pk:
                 overlap_curso = overlap_curso.exclude(pk=self.pk)
 
