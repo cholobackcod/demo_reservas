@@ -4,11 +4,12 @@ import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UsersService } from '../../../services/users';
 import { User } from '../../../services/auth';
+import { DocentesAdmin } from '../docentes/docentes';
 
 @Component({
   selector: 'app-usuarios',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, DocentesAdmin],
   templateUrl: './usuarios.html',
   styleUrl: './usuarios.css',
 })
@@ -21,6 +22,7 @@ export class Usuarios implements OnInit {
   loading = true;
   showForm = false;
   editingUserId: number | string | null = null;
+  vistaActiva: 'usuarios' | 'docentes' = 'usuarios';
 
   userForm: FormGroup;
 

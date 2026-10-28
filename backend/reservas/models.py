@@ -119,7 +119,7 @@ class Reserva(models.Model):
                     solapadas = solapadas.exclude(pk=self.pk)
                 
                 # Paso 32: Resultado revalidación
-                if solapadas.exists():
+                if solapadas.exists() and not getattr(self, '_omitir_solapamiento', False):
                     raise ValidationError('La sala ya se encuentra reservada en ese horario por otro docente.')
 
     def save(self, *args, **kwargs):

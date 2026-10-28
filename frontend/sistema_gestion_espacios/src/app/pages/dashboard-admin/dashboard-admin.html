@@ -1,25 +1,26 @@
-<main class="bg-secondary-subtle py-5">
+<main class="admin-dashboard">
 
   <div class="container">
 
-<!-- TÍTULO -->
-<div class="text-center mb-5">
-  <div class="d-inline-flex align-items-center gap-2 mb-2">
-    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 rounded-pill">
-      <i class="bi bi-mortarboard-fill me-1"></i>Escuela ProA &bull; Sede Capital Norte
-    </span>
+<div class="admin-hero mb-4">
+  <div>
+    <span class="admin-eyebrow"><i class="bi bi-shield-check me-1"></i>Administración</span>
+    <h1>Panel de administración</h1>
+    <p>Gestioná los espacios, las reservas y las personas de la institución.</p>
   </div>
-  <h1 class="fw-bold text-primary mb-1">
-    Panel de Administración
-  </h1>
-  <p class="text-muted">
-    Gestioná laboratorios, reservas, docentes, usuarios y estadísticas globales del sistema.
-  </p>
+  <div class="admin-hero-icon" aria-hidden="true">
+    <i class="bi bi-grid-1x2-fill"></i>
+  </div>
 </div>
 
+<div class="admin-section-title">
+  <div>
+    <h2>Accesos principales</h2>
+    <span>Elegí una sección para comenzar.</span>
+  </div>
+</div>
 
-<!-- TARJETAS PRINCIPALES -->
-<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-5 g-3 mb-5">
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3 mb-5 admin-access-grid">
 
   <!-- ADMINISTRAR SALAS -->
   <div class="col">
@@ -27,14 +28,15 @@
       routerLink="/dashboard/admin/salas"
       class="text-decoration-none"
     >
-      <div class="card h-100 p-4 shadow-sm border-0 text-center hover-card">
-        <div class="fs-2 text-primary mb-2"><i class="bi bi-door-open"></i></div>
-        <h2 class="h6 fw-bold text-primary mb-2">
+      <div class="admin-access-card h-100">
+        <div class="admin-access-icon salas"><i class="bi bi-door-open"></i></div>
+        <h2 class="h6 fw-bold mb-2">
           Administrar Salas
         </h2>
         <p class="text-muted small mb-0">
           Crear, editar o eliminar salas disponibles.
         </p>
+        <span class="admin-access-link">Abrir sección <i class="bi bi-arrow-right"></i></span>
       </div>
     </a>
   </div>
@@ -45,50 +47,34 @@
       routerLink="/dashboard/admin/reservas"
       class="text-decoration-none"
     >
-      <div class="card h-100 p-4 shadow-sm border-0 text-center hover-card">
-        <div class="fs-2 text-primary mb-2"><i class="bi bi-calendar-check"></i></div>
-        <h2 class="h6 fw-bold text-primary mb-2">
+      <div class="admin-access-card h-100">
+        <div class="admin-access-icon reservas"><i class="bi bi-calendar-check"></i></div>
+        <h2 class="h6 fw-bold mb-2">
           Gestionar Reservas
         </h2>
         <p class="text-muted small mb-0">
           Ver y administrar las reservas realizadas.
         </p>
+        <span class="admin-access-link">Abrir sección <i class="bi bi-arrow-right"></i></span>
       </div>
     </a>
   </div>
 
-  <!-- GESTIONAR USUARIOS -->
+  <!-- USUARIOS Y DOCENTES -->
   <div class="col">
     <a
       routerLink="/dashboard/admin/usuarios"
       class="text-decoration-none"
     >
-      <div class="card h-100 p-4 shadow-sm border-0 text-center hover-card">
-        <div class="fs-2 text-primary mb-2"><i class="bi bi-people"></i></div>
-        <h2 class="h6 fw-bold text-primary mb-2">
-          Gestionar Usuarios
+      <div class="admin-access-card h-100">
+        <div class="admin-access-icon personas"><i class="bi bi-people"></i></div>
+        <h2 class="h6 fw-bold mb-2">
+          Usuarios y Docentes
         </h2>
         <p class="text-muted small mb-0">
-          Administrar cuentas y permisos de usuarios.
+          Administrar cuentas, docentes y asignaciones.
         </p>
-      </div>
-    </a>
-  </div>
-
-  <!-- GESTIÓN DE DOCENTES Y HORARIOS -->
-  <div class="col">
-    <a
-      routerLink="/dashboard/admin/docentes"
-      class="text-decoration-none"
-    >
-      <div class="card h-100 p-4 shadow-sm border-0 text-center hover-card border-top border-primary border-3">
-        <div class="fs-2 text-primary mb-2"><i class="bi bi-person-badge-fill"></i></div>
-        <h2 class="h6 fw-bold text-primary mb-2">
-          Gestión de Docentes
-        </h2>
-        <p class="text-muted small mb-0">
-          Asignación de materias, cursos y carga horaria.
-        </p>
+        <span class="admin-access-link">Abrir sección <i class="bi bi-arrow-right"></i></span>
       </div>
     </a>
   </div>
@@ -99,14 +85,15 @@
       routerLink="/dashboard/admin/reportes"
       class="text-decoration-none"
     >
-      <div class="card h-100 p-4 shadow-sm border-0 text-center hover-card">
-        <div class="fs-2 text-primary mb-2"><i class="bi bi-bar-chart-line"></i></div>
-        <h2 class="h6 fw-bold text-primary mb-2">
+      <div class="admin-access-card h-100">
+        <div class="admin-access-icon reportes"><i class="bi bi-bar-chart-line"></i></div>
+        <h2 class="h6 fw-bold mb-2">
           Ver Reportes
         </h2>
         <p class="text-muted small mb-0">
           Consultar estadísticas e información del sistema.
         </p>
+        <span class="admin-access-link">Abrir sección <i class="bi bi-arrow-right"></i></span>
       </div>
     </a>
   </div>

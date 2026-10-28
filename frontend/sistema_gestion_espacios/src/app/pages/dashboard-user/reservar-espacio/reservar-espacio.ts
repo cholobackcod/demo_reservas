@@ -84,6 +84,8 @@ export class ReservarEspacio implements OnInit {
 
   private usersMap = new Map<number, { nombre: string; email: string }>();
   reservaSeleccionada: HorarioOcupado | null = null;
+  confirmacionReservaVisible = false;
+  pasoActual = 1;
 
   reservaForm: FormGroup;
   salas: Lab[] = [];
@@ -154,6 +156,7 @@ export class ReservarEspacio implements OnInit {
   fechaCalendarioActual: Date = new Date();
   mesCalendarioNombre = '';
   diasCalendarioMensual: DiaCalendario[] = [];
+  fechasDisponiblesDocente: string[] = [];
   errorHorarioDocente = '';
   popupErrorHorarioVisible = false;
   popupErrorHorarioMensaje = '';
@@ -207,6 +210,7 @@ export class ReservarEspacio implements OnInit {
     if (d.getHours() >= 18) {
       fechaInicial.setDate(fechaInicial.getDate() + 1);
     }
+
     const year = fechaInicial.getFullYear();
     const month = String(fechaInicial.getMonth() + 1).padStart(2, '0');
     const day = String(fechaInicial.getDate()).padStart(2, '0');
@@ -233,6 +237,21 @@ export class ReservarEspacio implements OnInit {
     });
   }
 
+  irAlPaso(paso: number): void {
+    if (paso < 1 || paso > 3) return;
+    if (paso === 2 && !this.reservaForm.get('sala')?.value) {
+      this.reservaForm.get('sala')?.markAsTouched();
+      return;
+    }
+    this.pasoActual = paso;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.cdr.markForCheck();
+  }
+
+  continuarAlPasoDos(): void {
+    this.irAlPaso(2);
+  }
+
   obtenerDiaSemanaDeFecha(fechaStr: string): string {
     if (!fechaStr) return '';
     const [y, m, d] = fechaStr.split('-').map(Number);
@@ -249,6 +268,68 @@ export class ReservarEspacio implements OnInit {
       const ad = (a.dia_semana || a.dia || '').toLowerCase();
       return ad === dia || (dia === 'miercoles' && (ad === 'miércoles' || ad === 'miercoles'));
     });
+  }
+
+  get fechasDisponiblesDocenteFormateadas(): { fecha: string; etiqueta: string; clases: any[] }[] {
+    return this.fechasDisponiblesDocente.map(fecha => ({
+      fecha,
+      etiqueta: this.formatearFechaCorta(fecha),
+      clases: this.todasLasAsignacionesDocente.filter(clase =>
+        this.diaDeFechaCoincideConAsignacion(fecha, clase)
+      )
+    }));
+  }
+
+  private diaDeFechaCoincideConAsignacion(fecha: string, asignacion: any): boolean {
+    const dia = this.obtenerDiaSemanaDeFecha(fecha);
+    const diaAsignacion = (asignacion.dia_semana || asignacion.dia || '').toLowerCase();
+    return diaAsignacion === dia || (dia === 'miercoles' && diaAsignacion === 'miércoles');
+  }
+
+  private formatearFechaCorta(fecha: string): string {
+    const [year, month, day] = fecha.split('-').map(Number);
+    const fechaLocal = new Date(year, month - 1, day);
+    return fechaLocal.toLocaleDateString('es-AR', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long'
+    });
+  }
+
+  private generarFechasDisponiblesDocente(): void {
+    const fechas: string[] = [];
+    const fechaBase = new Date();
+    fechaBase.setHours(0, 0, 0, 0);
+
+    for (let offset = 0; offset < 45 && fechas.length < 10; offset++) {
+      const fecha = new Date(fechaBase);
+      fecha.setDate(fechaBase.getDate() + offset);
+      const fechaTexto = [
+        fecha.getFullYear(),
+        String(fecha.getMonth() + 1).padStart(2, '0'),
+        String(fecha.getDate()).padStart(2, '0')
+      ].join('-');
+
+      if (this.todasLasAsignacionesDocente.some(asignacion =>
+        this.diaDeFechaCoincideConAsignacion(fechaTexto, asignacion)
+      )) {
+        fechas.push(fechaTexto);
+      }
+    }
+
+    this.fechasDisponiblesDocente = fechas;
+  }
+
+  seleccionarFechaDisponible(fecha: string): void {
+    this.reservaForm.patchValue({
+      fechaDesde: fecha,
+      fechaHasta: fecha
+    });
+    const primeraClase = this.clasesDelDiaSeleccionado[0];
+    if (primeraClase) {
+      this.aplicarHorarioClase(primeraClase);
+    }
+    this.cdr.markForCheck();
   }
 
   generarCalendarioMensual(): void {
@@ -543,6 +624,19 @@ export class ReservarEspacio implements OnInit {
       return;
     }
     this.aplicarHorarioClase(clase);
+    this.confirmacionReservaVisible = true;
+    this.cdr.markForCheck();
+  }
+
+  cerrarConfirmacionReserva(): void {
+    if (this.enviando) return;
+    this.confirmacionReservaVisible = false;
+    this.cdr.markForCheck();
+  }
+
+  confirmarReservaDesdePopup(): void {
+    if (this.enviando) return;
+    this.confirmacionReservaVisible = false;
     this.confirmarReserva();
   }
 
@@ -1019,6 +1113,7 @@ export class ReservarEspacio implements OnInit {
           if (data && data.materias && data.materias.length > 0) {
             this.tieneAsignaciones = true;
             this.todasLasAsignacionesDocente = data.asignaciones || [];
+            this.generarFechasDisponiblesDocente();
             this.materiasDisponibles = data.materias.map(m => m.nombre);
             this.cursosDisponibles = data.cursos.map(c => c.nombre);
 

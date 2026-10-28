@@ -15,6 +15,7 @@ export interface Reservation {
   materia?: string;
   netbooks?: number;
   estado: 'confirmada' | 'finalizada' | 'cancelada' | string;
+  forzarSolapamiento?: boolean;
   offline?: boolean;
 }
 

@@ -1,36 +1,6 @@
 <div class="mi-horario-container mb-5">
 
   <!-- HEADER DE LA PANTALLA -->
-  <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4 no-print">
-    <div>
-      <h2 class="fw-bold mb-1 text-primary d-flex align-items-center gap-2">
-        <i class="bi bi-calendar2-range text-primary"></i>Mi Horario y Carga Horaria Semanal
-      </h2>
-      <p class="text-muted mb-0 small">
-        Consulta de materias asignadas, cursos, distribución horaria de lunes a viernes y total semanal oficial.
-      </p>
-    </div>
-
-    <div class="d-flex align-items-center gap-2">
-      <button
-        type="button"
-        class="btn btn-outline-primary btn-sm d-flex align-items-center gap-2 shadow-sm fw-semibold"
-        (click)="imprimirHorario()"
-        title="Imprimir o guardar como PDF"
-      >
-        <i class="bi bi-printer-fill fs-6"></i>
-        <span>Imprimir / Exportar a PDF</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- AVISO DE CONTROL INSTITUCIONAL (SOLO LECTURA) -->
-  <div class="alert alert-info py-2 px-3 mb-4 rounded-3 border-info-subtle d-flex align-items-center gap-2 small no-print" role="alert">
-    <i class="bi bi-shield-lock-fill text-info fs-5"></i>
-    <div>
-      <strong>Carga horaria oficial verificada:</strong> Este cronograma corresponde a las asignaciones vigentes registradas por la dirección escolar para el Ciclo Lectivo 2026. Los docentes no pueden autoasignarse materias ni alterar su carga horaria.
-    </div>
-  </div>
 
   @if (loading) {
     <div class="text-center py-5 no-print">
@@ -41,8 +11,9 @@
     </div>
   } @else if (horarioData) {
 
+    <div id="horarioSummary" class="horario-summary" [class.is-open]="summaryOpen">
     <!-- BANNER DEL DOCENTE -->
-    <div class="card border-0 shadow-sm rounded-3 mb-4 p-3 bg-white no-print">
+    <div class="horario-profile card border-0 shadow-sm rounded-3 mb-0 p-3 bg-white no-print">
       <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
         <div class="d-flex align-items-center gap-3">
           <div class="avatar-lg rounded-circle bg-primary text-white fw-bold d-flex align-items-center justify-content-center fs-3" style="width: 54px; height: 54px;">
@@ -65,7 +36,7 @@
     </div>
 
     <!-- TARJETAS DE CARGA HORARIA SEMANAL (REQUISITO 3) -->
-    <div class="row g-3 mb-4 no-print">
+    <div class="horario-stats row g-2 mb-0 no-print">
       <div class="col-12 col-sm-6 col-lg-3">
         <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 border-start border-primary border-4 text-center">
           <span class="text-muted small fw-semibold text-uppercase">Total Horas Semanales</span>
@@ -100,8 +71,8 @@
     </div>
 
     <!-- DESGLOSE DE HORAS POR DÍA (LUNES A VIERNES) -->
-    <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white p-3 no-print">
-      <h6 class="fw-bold text-dark mb-3">
+    <div class="horario-daily card border-0 shadow-sm rounded-3 mb-0 bg-white p-2 no-print">
+      <h6 class="fw-bold text-dark mb-2 small">
         <i class="bi bi-clock-history me-2 text-primary"></i>Carga Horaria Diaria (Lunes a Viernes)
       </h6>
       <div class="row g-2">
@@ -126,11 +97,12 @@
         }
       </div>
     </div>
+    </div>
 
     <!-- GRILLA SEMANAL VISUAL (LUNES A VIERNES) -->
-    <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white overflow-hidden no-print">
-      <div class="card-header bg-light border-bottom py-3">
-        <h5 class="fw-bold mb-0 text-dark">
+    <div class="horario-grid card border-0 shadow-sm rounded-3 mb-0 bg-white overflow-hidden no-print">
+      <div class="card-header bg-light border-bottom py-2">
+        <h5 class="fw-bold mb-0 text-dark fs-6">
           <i class="bi bi-grid-3x3-gap-fill me-2 text-primary"></i>Grilla Semanal de Clases
         </h5>
       </div>
@@ -152,7 +124,7 @@
             <tr>
               @for (d of diasSemana; track d.key) {
                 @let diaInfo = getDesgloseDia(d.key);
-                <td class="align-top p-2 columna-dia bg-light-subtle">
+                <td class="align-top p-2 columna-dia bg-light-subtle" [attr.data-dia]="d.label">
                   @if (diaInfo && diaInfo.bloques && diaInfo.bloques.length > 0) {
                     @for (b of diaInfo.bloques; track b.id) {
                       <div class="clase-card p-2 rounded-2 mb-2 shadow-sm border bg-white">
@@ -177,17 +149,16 @@
                         <div class="text-primary small fw-semibold">
                           <i class="bi bi-mortarboard me-1"></i>{{ b.cursoNombre }}
                         </div>
-                        <div class="text-danger small mt-1 fw-bold" style="font-size: 0.75rem;">
+                        <div class="text-danger small mt-1 fw-bold clase-horario">
                           <i class="bi bi-clock me-1"></i>{{ b.hora_inicio }} a {{ b.hora_fin }} hs
                         </div>
                         <a
                           [routerLink]="['/dashboard/user/reservar']"
                           [queryParams]="{ materia: b.materiaNombre, curso: b.cursoNombre, horaDesde: b.hora_inicio, horaHasta: b.hora_fin, dia: b.dia_semana || d.key }"
-                          class="btn btn-sm btn-outline-primary w-100 mt-2 py-0 d-flex align-items-center justify-content-center gap-1"
-                          style="font-size: 0.72rem; line-height: 1.6;"
-                          title="Reservar laboratorio escolar para esta clase"
+                          class="btn btn-sm btn-primary w-100 mt-2 d-flex align-items-center justify-content-center gap-1"
+                          title="Abrir la reserva de un laboratorio para esta clase"
                         >
-                          <i class="bi bi-calendar-plus"></i> Reservar espacio
+                          <i class="bi bi-calendar-plus"></i> Reservar laboratorio
                         </a>
                       </div>
                     }
@@ -204,67 +175,55 @@
       </div>
     </div>
 
-    <!-- TABLA DETALLE DE ASIGNACIONES -->
-    <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white p-3 no-print">
-      <h6 class="fw-bold text-dark mb-3">
-        <i class="bi bi-table me-2 text-primary"></i>Detalle de Espacios Curriculares Asignados
-      </h6>
+    <div class="horario-detail card border-0 shadow-sm rounded-3 mt-4 bg-white p-3 no-print">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+        <h6 class="fw-bold text-dark mb-0">
+          <i class="bi bi-calendar-check me-2 text-primary"></i>Mis reservas
+        </h6>
+        <a routerLink="/dashboard/user/reservas" class="btn btn-sm btn-outline-primary">
+          <i class="bi bi-list-check me-1"></i>Ver todas
+        </a>
+      </div>
 
       <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
           <thead class="table-light small text-muted">
             <tr>
-              <th>Espacio Curricular</th>
+              <th>Laboratorio</th>
+              <th>Fecha</th>
+              <th>Horario</th>
+              <th>Materia</th>
               <th>Curso</th>
-              <th>Día</th>
-              <th>Horario de Clase</th>
-              <th>Duración Minutos</th>
-              <th>Tipo de Actividad</th>
-              <th>Ciclo Lectivo</th>
-              <th class="text-end pe-3">Acción</th>
+              <th>Estado</th>
             </tr>
           </thead>
           <tbody>
-            @for (a of horarioData.asignaciones; track a.id) {
+            @for (reserva of reservasUsuario; track reserva.id) {
               <tr>
-                <td>
-                  <strong>{{ a.materiaNombre }}</strong>
-                  @if (a.esCatedraCompartida) {
-                    <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle ms-1" style="font-size: 0.68rem;" [title]="'Cátedra Compartida con: ' + (a.coDocentes?.join(', ') || '')">
-                      <i class="bi bi-people-fill me-1"></i>Compartida ({{ a.coDocentes?.join(', ') }})
-                    </span>
-                  }
+                <td data-label="Laboratorio"><strong>{{ nombreLaboratorio(reserva.salaId) }}</strong></td>
+                <td data-label="Fecha">{{ formatearFechaReserva(reserva.inicio) }}</td>
+                <td data-label="Horario">
+                  <span class="badge bg-primary-subtle text-primary">
+                    {{ formatearHoraReserva(reserva.inicio) }} a {{ formatearHoraReserva(reserva.fin) }} hs
+                  </span>
                 </td>
-                <td><span class="badge bg-light text-dark border">{{ a.cursoNombre }}</span></td>
-                <td class="text-capitalize">{{ a.dia_semana }}</td>
-                <td><span class="badge bg-primary-subtle text-primary">{{ a.hora_inicio }} a {{ a.hora_fin }} hs</span></td>
-                <td>{{ a.duracionMinutos }} min ({{ a.duracionHorasFormato }})</td>
-                <td><span class="badge" [ngClass]="badgeClase(a.tipo_actividad)">{{ a.tipo_actividad }}</span></td>
-                <td>{{ a.ciclo_lectivo }}</td>
-                <td class="text-end pe-3">
-                  <a
-                    [routerLink]="['/dashboard/user/reservar']"
-                    [queryParams]="{ materia: a.materiaNombre, curso: a.cursoNombre, horaDesde: a.hora_inicio, horaHasta: a.hora_fin, dia: a.dia_semana }"
-                    class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 py-1 px-2 shadow-sm"
-                    style="font-size: 0.78rem;"
-                    title="Reservar laboratorio para esta clase"
-                  >
-                    <i class="bi bi-calendar-plus"></i> Reservar
-                  </a>
+                <td data-label="Materia">{{ reserva.materia || 'Sin materia' }}</td>
+                <td data-label="Curso"><span class="badge bg-light text-dark border">{{ reserva.curso || 'Sin curso' }}</span></td>
+                <td data-label="Estado">
+                  <span class="badge bg-success-subtle text-success border border-success-subtle text-capitalize">
+                    {{ reserva.estado }}
+                  </span>
                 </td>
               </tr>
             } @empty {
               <tr>
-                <td colspan="8" class="text-center py-4 text-muted">
-                  No tenés materias o cursos asignados actualmente en el sistema.
-                </td>
+                <td colspan="6" class="text-center py-4 text-muted">No tenés reservas activas actualmente.</td>
               </tr>
             }
           </tbody>
         </table>
       </div>
     </div>
-
 
     <!-- ============================================================ -->
     <!-- PLANTILLA DE IMPRESIÓN OFICIAL (A4 / EXPORTACIÓN A PDF)       -->

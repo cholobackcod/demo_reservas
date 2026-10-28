@@ -1,83 +1,5 @@
 <div class="docentes-admin-container mb-5">
 
-  <!-- HEADER DE LA SECCIÓN -->
-  <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
-    <div>
-      <h2 class="fw-bold mb-1 text-primary d-flex align-items-center gap-2">
-        <i class="bi bi-person-workspace text-primary"></i>Gestión de Docentes y Asignación de Materias
-      </h2>
-      <p class="text-muted mb-0 small">
-        Administración de cuentas docentes, asignación de espacios curriculares, horarios y cálculo automático de la carga horaria semanal.
-      </p>
-    </div>
-
-    <div class="d-flex align-items-center gap-2">
-      <button type="button" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1 shadow-sm" (click)="abrirConfig()">
-        <i class="bi bi-gear-fill text-secondary"></i>
-        <span>Módulos: <strong>{{ config?.duracion_modulo_minutos || 40 }} min</strong></span>
-      </button>
-
-      <button type="button" class="btn btn-success btn-sm d-flex align-items-center gap-1 shadow-sm fw-semibold" (click)="abrirCrearDocente()">
-        <i class="bi bi-person-plus-fill"></i>
-        <span>Nuevo Docente</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- TARJETAS DE MÉTRICAS GLOBALES -->
-  <div class="row g-3 mb-4">
-    <div class="col-12 col-sm-6 col-lg-3">
-      <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 border-start border-primary border-4">
-        <div class="d-flex align-items-center justify-content-between">
-          <div>
-            <span class="text-muted small fw-semibold text-uppercase">Total Docentes</span>
-            <h3 class="fw-bold mb-0 text-dark mt-1">{{ docentes.length }}</h3>
-            <span class="badge bg-success-subtle text-success small mt-1">{{ totalDocentesActivos }} activos</span>
-          </div>
-          <div class="fs-1 text-primary opacity-50"><i class="bi bi-people-fill"></i></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-12 col-sm-6 col-lg-3">
-      <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 border-start border-info border-4">
-        <div class="d-flex align-items-center justify-content-between">
-          <div>
-            <span class="text-muted small fw-semibold text-uppercase">Carga Horaria Semanal</span>
-            <h3 class="fw-bold mb-0 text-info mt-1">{{ totalHorasInstitucionalesFormato }}</h3>
-            <span class="text-muted small mt-1 d-block">{{ totalHorasInstitucionalesMinutos }} minutos reloj</span>
-          </div>
-          <div class="fs-1 text-info opacity-50"><i class="bi bi-clock-history"></i></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-12 col-sm-6 col-lg-3">
-      <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 border-start border-warning border-4">
-        <div class="d-flex align-items-center justify-content-between">
-          <div>
-            <span class="text-muted small fw-semibold text-uppercase">Módulos Pedagógicos</span>
-            <h3 class="fw-bold mb-0 text-warning mt-1">{{ totalModulosInstitucionales }}</h3>
-            <span class="text-muted small mt-1 d-block">Base: {{ config?.duracion_modulo_minutos || 40 }} min / módulo</span>
-          </div>
-          <div class="fs-1 text-warning opacity-50"><i class="bi bi-journal-bookmark-fill"></i></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-12 col-sm-6 col-lg-3">
-      <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 border-start border-success border-4">
-        <div class="d-flex align-items-center justify-content-between">
-          <div>
-            <span class="text-muted small fw-semibold text-uppercase">Ciclo Lectivo</span>
-            <h3 class="fw-bold mb-0 text-success mt-1">{{ config?.ciclo_lectivo_actual || '2026' }}</h3>
-            <span class="text-muted small mt-1 d-block">Sede Capital Norte</span>
-          </div>
-          <div class="fs-1 text-success opacity-50"><i class="bi bi-calendar-check-fill"></i></div>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- NAVEGACIÓN ENTRE VISTAS -->
   <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
@@ -155,7 +77,7 @@
           </div>
         } @else {
           <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
+            <table class="table table-hover align-middle mb-0 docentes-table">
               <thead class="table-light">
                 <tr class="small text-muted text-uppercase">
                   <th>Docente</th>
@@ -170,7 +92,7 @@
                 @for (d of docentesFiltrados; track d.id) {
                   <tr>
                     <!-- DOCENTE -->
-                    <td>
+                    <td data-label="Docente">
                       <div class="d-flex align-items-center gap-2">
                         <div class="avatar-sm rounded-circle bg-primary-subtle text-primary fw-bold d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
                           {{ d.nombre[0] }}{{ d.apellido[0] }}
@@ -183,7 +105,7 @@
                     </td>
 
                     <!-- ESTADO -->
-                    <td>
+                    <td data-label="Estado">
                       @if (d.activo) {
                         <span class="badge bg-success-subtle text-success border border-success-subtle">
                           <i class="bi bi-check-circle me-1"></i>Activo
@@ -196,7 +118,7 @@
                     </td>
 
                     <!-- CARGA HORARIA SEMANAL -->
-                    <td>
+                    <td data-label="Carga horaria semanal">
                       <div class="fw-bold text-primary fs-6">
                         <i class="bi bi-clock me-1"></i>{{ d.totalHorasRelojFormato }}
                       </div>
@@ -206,7 +128,7 @@
                     </td>
 
                     <!-- MÓDULOS SEMANALES -->
-                    <td>
+                    <td data-label="Módulos">
                       <span class="badge bg-light text-dark border fs-6 fw-semibold">
                         {{ d.totalModulos }} mód.
                       </span>
@@ -216,7 +138,7 @@
                     </td>
 
                     <!-- MATERIAS ASIGNADAS -->
-                    <td style="max-width: 250px;">
+                    <td data-label="Materias asignadas" style="max-width: 250px;">
                       @if (d.materiasAsignadas && d.materiasAsignadas.length > 0) {
                         <div class="d-flex flex-wrap gap-1">
                           @for (m of d.materiasAsignadas; track m) {
@@ -231,49 +153,50 @@
                     </td>
 
                     <!-- ACCIONES -->
-                    <td class="text-end pe-3">
-                      <div class="btn-group btn-group-sm" role="group">
+                    <td class="docente-acciones-cell text-end pe-3" data-label="Acciones">
+                      <div class="acciones-docente" role="group" aria-label="Acciones del docente">
                         <button
                           type="button"
-                          class="btn btn-outline-primary"
+                          class="btn accion-docente accion-horario"
                           (click)="verFichaDocente(d)"
                           title="Ver Ficha y Grilla Semanal"
                         >
-                          <i class="bi bi-calendar-week me-1"></i>Horario
+                          <i class="bi bi-calendar-week" aria-hidden="true"></i><span>Horario</span>
                         </button>
                         <button
                           type="button"
-                          class="btn btn-outline-success"
+                          class="btn accion-docente accion-asignar"
                           (click)="abrirCrearAsignacion(d.id)"
                           title="Asignar Materia"
                         >
-                          <i class="bi bi-plus-lg"></i>
+                          <i class="bi bi-plus-lg" aria-hidden="true"></i><span>Asignar</span>
                         </button>
                         <button
                           type="button"
-                          class="btn btn-outline-secondary"
+                          class="btn accion-docente accion-editar"
                           (click)="abrirEditarDocente(d)"
                           title="Editar cuenta"
                         >
-                          <i class="bi bi-pencil"></i>
+                          <i class="bi bi-pencil" aria-hidden="true"></i><span>Editar</span>
                         </button>
                         <button
                           type="button"
-                          class="btn btn-outline-warning"
+                          class="btn accion-docente accion-clave"
                           (click)="abrirResetPassword(d)"
                           title="Restablecer contraseña"
                         >
-                          <i class="bi bi-key"></i>
+                          <i class="bi bi-key" aria-hidden="true"></i><span>Clave</span>
                         </button>
                         <button
                           type="button"
-                          class="btn"
+                          class="btn accion-docente"
                           [class.btn-outline-danger]="d.activo"
                           [class.btn-outline-success]="!d.activo"
                           (click)="toggleEstadoDocente(d)"
                           [title]="d.activo ? 'Desactivar cuenta (baja lógica)' : 'Activar cuenta'"
                         >
-                          <i [class.bi-person-dash]="d.activo" [class.bi-person-check]="!d.activo"></i>
+                          <i [class.bi-person-dash]="d.activo" [class.bi-person-check]="!d.activo" aria-hidden="true"></i>
+                          <span>{{ d.activo ? 'Desactivar' : 'Activar' }}</span>
                         </button>
                       </div>
                     </td>
@@ -368,12 +291,14 @@
                   <td>{{ a.duracionMinutos }} min ({{ a.duracionHorasFormato }})</td>
                   <td><span class="badge" [ngClass]="badgeClase(a.tipo_actividad)">{{ a.tipo_actividad }}</span></td>
                   <td class="text-end">
-                    <button type="button" class="btn btn-link btn-sm text-primary p-0 me-2" (click)="abrirEditarAsignacion(a)">
-                      <i class="bi bi-pencil"></i>
+                    <div class="acciones-asignacion">
+                    <button type="button" class="btn accion-asignacion accion-editar" (click)="abrirEditarAsignacion(a)">
+                      <i class="bi bi-pencil" aria-hidden="true"></i><span>Editar</span>
                     </button>
-                    <button type="button" class="btn btn-link btn-sm text-danger p-0" (click)="eliminarAsignacion(a.id)">
-                      <i class="bi bi-trash"></i>
+                    <button type="button" class="btn accion-asignacion accion-eliminar" (click)="eliminarAsignacion(a.id)">
+                      <i class="bi bi-trash" aria-hidden="true"></i><span>Eliminar</span>
                     </button>
+                    </div>
                   </td>
                 </tr>
               } @empty {

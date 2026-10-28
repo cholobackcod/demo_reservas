@@ -1,21 +1,120 @@
-    .dashboard-container-admin {
-        padding: 80px 10%;
-        background: var(--light);
-        min-height: 100vh;
-    }
+.admin-dashboard {
+    min-height: 100vh;
+    padding: 2rem 0 4rem;
+    background: #f5f7fb;
+}
 
-    .title {
-        text-align: center;
-        margin-bottom: 50px;
-        font-size: 2.5rem;
-        color: var(--primary);
-    }
+.admin-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1.75rem 2rem;
+    border-radius: 1rem;
+    color: #fff;
+    background: linear-gradient(120deg, #1d4ed8, #2563eb 60%, #38bdf8);
+    box-shadow: 0 12px 28px rgba(37, 99, 235, 0.2);
+}
 
-    .cards-container-admin {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 30px;
-    }
+.admin-eyebrow {
+    display: inline-block;
+    margin-bottom: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.85;
+}
+
+.admin-hero h1 {
+    margin: 0 0 0.35rem;
+    font-size: clamp(1.7rem, 3vw, 2.35rem);
+    font-weight: 700;
+}
+
+.admin-hero p {
+    margin: 0;
+    opacity: 0.9;
+}
+
+.admin-hero-icon {
+    display: grid;
+    width: 5rem;
+    height: 5rem;
+    flex: 0 0 5rem;
+    place-items: center;
+    border: 1px solid rgba(255,255,255,.35);
+    border-radius: 1rem;
+    background: rgba(255,255,255,.14);
+    font-size: 2rem;
+}
+
+.admin-section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    margin: 1.5rem 0 0.75rem;
+}
+
+.admin-section-title h2 {
+    margin: 0;
+    color: #1e293b;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.admin-section-title span {
+    color: #64748b;
+    font-size: 0.85rem;
+}
+
+.admin-access-grid > .col {
+    min-width: 0;
+}
+
+.admin-access-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1.25rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.85rem;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, .05);
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+
+.admin-access-card:hover {
+    border-color: #93c5fd;
+    box-shadow: 0 12px 22px rgba(37, 99, 235, .12);
+    transform: translateY(-3px);
+}
+
+.admin-access-card h2 {
+    color: #1e293b;
+}
+
+.admin-access-icon {
+    display: grid;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-bottom: 1rem;
+    place-items: center;
+    border-radius: .75rem;
+    font-size: 1.3rem;
+}
+
+.admin-access-icon.salas { color: #2563eb; background: #eff6ff; }
+.admin-access-icon.reservas { color: #0891b2; background: #ecfeff; }
+.admin-access-icon.personas { color: #7c3aed; background: #f5f3ff; }
+.admin-access-icon.reportes { color: #059669; background: #ecfdf5; }
+
+.admin-access-link {
+    margin-top: auto;
+    padding-top: 1rem;
+    color: #2563eb;
+    font-size: .8rem;
+    font-weight: 700;
+}
 
     .card_admin {
         background: var(--white);

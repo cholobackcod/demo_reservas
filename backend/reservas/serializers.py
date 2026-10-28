@@ -25,12 +25,14 @@ class ReservaSerializer(serializers.ModelSerializer):
     materia = serializers.CharField(max_length=100, required=False, allow_blank=True, default='')
     netbooks = serializers.IntegerField(required=False, default=0, min_value=0)
     estado = serializers.CharField(default='confirmada', required=False)
+    forzarSolapamiento = serializers.BooleanField(write_only=True, required=False, default=False)
 
     class Meta:
         model = Reserva
         fields = [
             'id', 'usuarioId', 'usuarioNombre', 'usuarioEmail', 'salaId',
-            'inicio', 'fin', 'curso', 'materia', 'netbooks', 'estado', 'fecha_creacion'
+            'inicio', 'fin', 'curso', 'materia', 'netbooks', 'estado', 'fecha_creacion',
+            'forzarSolapamiento'
         ]
 
     def get_usuarioNombre(self, obj):
@@ -42,6 +44,8 @@ class ReservaSerializer(serializers.ModelSerializer):
         return obj.usuario.email if obj.usuario else ""
 
     def validate(self, data):
+        forzar_solapamiento = data.pop('forzarSolapamiento', False)
+        self._forzar_solapamiento = forzar_solapamiento
         # Paso 18 del Diagrama de Secuencia: validate(): inicio < fin
         inicio = data.get('inicio', getattr(self.instance, 'inicio', None))
         fin = data.get('fin', getattr(self.instance, 'fin', None))
@@ -173,11 +177,28 @@ class ReservaSerializer(serializers.ModelSerializer):
                         solapadas = solapadas.exclude(id=instance_id)
 
                     # Paso 24: alt [Existe solapamiento horario] -> ValidationError (sala ocupada)
-                    if solapadas.exists():
-                        mensaje_sala_ocupada = "El laboratorio seleccionado ya se encuentra reservado en ese horario por otro docente."
+                    if solapadas.exists() and not forzar_solapamiento:
+                        conflicto = solapadas.select_related('usuario', 'sala').first()
+                        nombre_docente = (
+                            f"{conflicto.usuario.nombre} {conflicto.usuario.apellido}".strip()
+                            if conflicto and conflicto.usuario else "otro docente"
+                        )
+                        inicio_conflicto = conflicto.inicio.strftime('%d/%m/%Y %H:%M') if conflicto else ''
+                        fin_conflicto = conflicto.fin.strftime('%H:%M') if conflicto else ''
+                        mensaje_sala_ocupada = (
+                            "El laboratorio seleccionado ya se encuentra reservado "
+                            f"por {nombre_docente} el {inicio_conflicto} a {fin_conflicto}."
+                        )
                         raise serializers.ValidationError({
                             "sala_ocupada": mensaje_sala_ocupada,
                             "non_field_errors": [mensaje_sala_ocupada]
                         })
 
         return data
+
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance._omitir_solapamiento = getattr(self, '_forzar_solapamiento', False)
+        instance.save()
+        return instance

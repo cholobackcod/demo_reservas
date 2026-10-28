@@ -2,6 +2,28 @@
   margin-bottom: 25px;
 }
 
+.reserva-header {
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 1rem;
+}
+
+.reserva-header h2 {
+  font-size: 1.65rem;
+}
+
+.step-number {
+  width: 1.35rem;
+  height: 1.35rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #eaf1ff;
+  color: #2563eb;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
 .section-header h2 {
   color: #1e293b;
 }
@@ -197,6 +219,37 @@ html {
   transform: translateY(-1px);
 }
 
+.nav-anchor-pill.active {
+  background-color: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+}
+
+.nav-anchor-pill.active .step-number {
+  background: #ffffff;
+  color: #2563eb;
+}
+
+.reserva-step {
+  animation: reservaStepIn 0.2s ease-out;
+}
+
+@keyframes reservaStepIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.nav-anchor-pill {
+  font-size: 0.78rem;
+  padding: 5px 10px;
+}
+
 /* TARJETAS DE LABORATORIOS DISPONIBLES */
 .lab-card-unificada {
   border: 1px solid #e2e8f0;
@@ -204,6 +257,23 @@ html {
   background: #ffffff;
   transition: all 0.2s ease-in-out;
   cursor: pointer;
+}
+
+.lab-card-unificada {
+  padding: 1rem !important;
+}
+
+.lab-card-unificada p {
+  min-height: 2.4rem;
+  margin-bottom: 0.75rem !important;
+}
+
+.lab-card-unificada .row {
+  margin-bottom: 0.75rem !important;
+}
+
+.lab-card-unificada .btn {
+  font-weight: 600;
 }
 
 .lab-card-unificada:hover {
@@ -216,6 +286,68 @@ html {
   border-color: #2563eb;
   background-color: #f8faff;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+}
+
+#seccion-mi-horario > form {
+  padding: 1rem !important;
+  border-color: #dbe4f0 !important;
+}
+
+#seccion-mi-horario > form > .card {
+  border-color: #dbe4f0 !important;
+  box-shadow: none !important;
+}
+
+#seccion-mi-horario .calendario-grid {
+  gap: 5px;
+}
+
+#seccion-mi-horario .calendario-celda {
+  min-height: 42px;
+}
+
+#seccion-mi-horario .clase-horario-btn {
+  border-width: 1px;
+}
+
+.fechas-clase-lista {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.fecha-clase-opcion {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #dbe4f0;
+  border-radius: 0.65rem;
+  background: #ffffff;
+  color: #1e293b;
+  text-align: left;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.fecha-clase-opcion:hover,
+.fecha-clase-opcion.seleccionada {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.fecha-clase-dia {
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.fecha-clase-cantidad {
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+#seccion-mi-horario .btn-primary {
+  font-weight: 600;
 }
 
 /* AGENDA SEMANAL INTEGRADA */
@@ -278,3 +410,30 @@ html {
   border-radius: 3px;
   display: inline-block;
 }
+
+.confirmacion-reserva-datos {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.85rem;
+  border: 1px solid #dbe4f0;
+  border-radius: 0.75rem;
+  background: #f8fafc;
+}
+
+.confirmacion-reserva-datos > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: baseline;
+}
+
+.confirmacion-reserva-datos span {
+  color: #64748b;
+  font-size: 0.78rem;
+}
+
+.confirmacion-reserva-datos strong {
+  color: #1e293b;
+  font-size: 0.85rem;
+  text-align: right;
+}

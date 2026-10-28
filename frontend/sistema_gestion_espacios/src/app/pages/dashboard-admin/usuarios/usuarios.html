@@ -1,15 +1,30 @@
 <div class="section-header mb-4">
-  <h2>Gestionar usuarios</h2>
+  <h2>Usuarios y docentes</h2>
   <p class="text-muted">
-    Administrá cuentas y permisos de los usuarios del sistema.
+    Administrá cuentas, roles, docentes y asignaciones desde un solo lugar.
   </p>
 </div>
 
+<div class="admin-personas-tabs nav nav-pills mb-4">
+  <button type="button" class="nav-link" [class.active]="vistaActiva === 'usuarios'"
+    (click)="vistaActiva = 'usuarios'">
+    <i class="bi bi-people me-1"></i>Todos los usuarios
+  </button>
+  <button type="button" class="nav-link" [class.active]="vistaActiva === 'docentes'"
+    (click)="vistaActiva = 'docentes'">
+    <i class="bi bi-person-workspace me-1"></i>Docentes y asignaciones
+  </button>
+</div>
+
+@if (vistaActiva === 'docentes') {
+  <app-docentes-admin></app-docentes-admin>
+} @else {
 <div class="d-flex justify-content-end mb-4">
   <button class="btn btn-success" (click)="abrirCrear()" *ngIf="!showForm">
     <i class="bi bi-person-plus me-1"></i> Crear usuario
   </button>
 </div>
+}
 
 @if (showForm) {
 <div class="card shadow-sm p-4 mb-4 border-info">

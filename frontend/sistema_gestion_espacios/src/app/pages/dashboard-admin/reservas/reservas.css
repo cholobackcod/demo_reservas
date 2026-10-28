@@ -16,3 +16,94 @@
   border-radius: 10px;
   overflow: hidden;
 }
+
+.filtros-reservas {
+  border: 1px solid #e5e7eb !important;
+}
+
+.filtros-reservas .form-label {
+  color: #475569;
+  margin-bottom: 0.25rem;
+}
+
+.filtros-reservas .input-group-text {
+  background: #fff;
+}
+
+.table td:last-child {
+  white-space: nowrap;
+}
+
+.acciones-reserva {
+  display: inline-flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.accion-reserva {
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 0.55rem;
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 700;
+  gap: 0.4rem;
+  justify-content: center;
+  min-height: 2.15rem;
+  padding: 0.45rem 0.7rem;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease,
+    transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.accion-reserva:hover {
+  transform: translateY(-1px);
+}
+
+.accion-ver {
+  background: #e8f1ff;
+  border-color: #b9d2ff;
+  color: #1558b0;
+}
+
+.accion-ver:hover,
+.accion-ver:focus-visible {
+  background: #d7e7ff;
+  border-color: #8eb6f5;
+  box-shadow: 0 3px 8px rgba(21, 88, 176, 0.16);
+  color: #10458e;
+}
+
+.accion-cancelar {
+  background: #fff0f0;
+  border-color: #ffcaca;
+  color: #b4232f;
+}
+
+.accion-cancelar:hover,
+.accion-cancelar:focus-visible {
+  background: #ffe0e0;
+  border-color: #f2a4a4;
+  box-shadow: 0 3px 8px rgba(180, 35, 47, 0.14);
+  color: #8f1822;
+}
+
+.accion-reserva:focus-visible {
+  outline: 3px solid rgba(13, 110, 253, 0.25);
+  outline-offset: 2px;
+}
+
+@media (max-width: 767.98px) {
+  .table td:last-child {
+    min-width: 185px;
+    white-space: normal;
+  }
+
+  .acciones-reserva {
+    justify-content: flex-start;
+  }
+}
+
+.modal dt {
+  font-weight: 500;
+}

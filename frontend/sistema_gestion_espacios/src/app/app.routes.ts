@@ -90,7 +90,8 @@ export const routes: Routes = [
 
       {
         path: 'docentes',
-        component: DocentesAdmin,
+        redirectTo: 'usuarios',
+        pathMatch: 'full',
         data: {
           title: 'Gestión de Docentes y Horarios'
         },

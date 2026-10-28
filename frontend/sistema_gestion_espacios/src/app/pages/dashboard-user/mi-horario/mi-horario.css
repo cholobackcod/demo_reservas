@@ -1,5 +1,186 @@
 .mi-horario-container {
   animation: fadeIn 0.3s ease-in-out;
+  margin-bottom: 1rem !important;
+}
+
+.mi-horario-container:has(.horario-grid) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "header"
+    "alert"
+    "toggle"
+    "summary"
+    "grid"
+    "detail";
+  gap: 0.75rem 1rem;
+  align-items: start;
+}
+
+.horario-header {
+  margin-bottom: 0 !important;
+}
+
+.horario-alert {
+  margin-bottom: 0 !important;
+}
+
+.horario-summary-toggle {
+  min-height: 0;
+}
+
+.horario-header { grid-area: header; }
+.horario-alert { grid-area: alert; }
+.horario-summary-toggle { grid-area: toggle; }
+.horario-summary {
+  display: none;
+  grid-area: summary;
+  grid-template-columns: 280px minmax(0, 1fr) 1.4fr;
+  gap: 0.75rem;
+}
+.horario-summary.is-open { display: grid; }
+.horario-grid { grid-area: grid; }
+.horario-detail { grid-area: detail; }
+
+.horario-stats .card {
+  padding: 0.65rem !important;
+}
+
+.horario-stats {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.horario-stats > [class*="col-"] {
+  width: auto;
+  max-width: none;
+  padding: 0;
+}
+
+.horario-stats .card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 48px;
+  text-align: left !important;
+}
+
+.horario-stats .card > span:first-child {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.65rem;
+  line-height: 1.15;
+}
+
+.horario-stats .fs-2 {
+  flex: 0 0 auto;
+  margin: 0 !important;
+  font-size: 1.3rem !important;
+}
+
+.horario-stats .card > span:last-child {
+  display: none !important;
+}
+
+.horario-stats .small {
+  font-size: 0.68rem;
+  line-height: 1.2;
+}
+
+.horario-profile {
+  padding: 0.75rem !important;
+}
+
+.horario-profile .avatar-lg {
+  width: 42px !important;
+  height: 42px !important;
+  font-size: 1.25rem !important;
+}
+
+.horario-profile h4 {
+  font-size: 1rem;
+}
+
+.horario-profile .text-muted {
+  font-size: 0.72rem;
+}
+
+.horario-profile .badge {
+  font-size: 0.72rem !important;
+  padding: 0.35rem 0.5rem !important;
+}
+
+.horario-daily .col {
+  flex: 0 0 50%;
+  max-width: 50%;
+}
+
+.horario-daily .fs-5 {
+  font-size: 1rem !important;
+}
+
+.horario-daily .p-2 {
+  padding: 0.4rem !important;
+}
+
+.horario-daily h6 {
+  white-space: nowrap;
+  font-size: 0.72rem !important;
+}
+
+.horario-grid .table-responsive {
+  overflow-x: auto;
+}
+
+.horario-grid .table {
+  min-width: 820px;
+  margin-bottom: 0;
+  border-collapse: separate;
+  border-spacing: 0.35rem 0;
+}
+
+.horario-grid .table > :not(caption) > * > * {
+  border: 0;
+}
+
+.horario-grid thead th {
+  padding: 0.85rem 0.5rem;
+  background: #f4f7ff;
+  border-bottom: 3px solid #2f63f5 !important;
+}
+
+.horario-grid tbody td {
+  padding: 0.65rem;
+  background: #f8faff;
+  border: 1px solid #e4e9f5 !important;
+  border-radius: 0.65rem;
+  vertical-align: top;
+}
+
+.horario-grid .clase-card {
+  border: 1px solid #e1e7f2 !important;
+  border-left: 4px solid #2f63f5 !important;
+  border-radius: 0.55rem !important;
+  padding: 0.7rem !important;
+}
+
+.horario-grid .clase-card .text-danger {
+  display: inline-block;
+  background: #fff1f1;
+  border-radius: 0.3rem;
+  padding: 0.15rem 0.35rem;
+}
+
+.horario-grid .clase-horario {
+  font-size: 0.75rem;
+}
+
+.horario-grid .clase-card .btn {
+  border-radius: 0.35rem;
+  font-weight: 600;
+  font-size: 0.74rem;
+  padding: 0.3rem 0.45rem;
 }
 
 @keyframes fadeIn {
@@ -12,7 +193,7 @@
 }
 
 .columna-dia {
-  min-height: 250px;
+  min-height: 220px;
 }
 
 .clase-card {
@@ -23,6 +204,190 @@
 .clase-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08) !important;
+}
+
+@media (max-width: 991.98px) {
+  .mi-horario-container:has(.horario-grid) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "header"
+      "alert"
+      "toggle"
+      "summary"
+      "grid"
+      "detail";
+  }
+
+  .horario-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .horario-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .horario-profile .d-flex {
+    align-items: flex-start !important;
+  }
+
+  .horario-profile .text-md-end {
+    width: 100%;
+    text-align: left !important;
+  }
+
+  .horario-daily .col {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .horario-grid .card-header {
+    padding: 0.65rem !important;
+  }
+
+  .horario-grid .table-responsive {
+    margin: 0;
+    overflow: visible;
+  }
+
+  .horario-grid .table {
+    display: block;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .horario-grid thead {
+    display: none;
+  }
+
+  .horario-grid tbody,
+  .horario-grid tbody tr {
+    display: block;
+    width: 100%;
+  }
+
+  .horario-grid tbody tr {
+    padding: 0.65rem;
+  }
+
+  .horario-grid tbody td {
+    border: 1px solid #dfe7f5 !important;
+    border-radius: 0.75rem;
+    display: block;
+    margin-bottom: 0.8rem;
+    min-height: 0;
+    padding: 0.8rem !important;
+    width: 100%;
+  }
+
+  .horario-grid tbody td:last-child {
+    margin-bottom: 0;
+  }
+
+  .horario-grid tbody td::before {
+    background: #eef3ff;
+    border-bottom: 2px solid #2f63f5;
+    border-radius: 0.45rem;
+    color: #172554;
+    content: attr(data-dia);
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin: -0.8rem -0.8rem 0.8rem;
+    padding: 0.65rem 0.75rem;
+    text-align: left;
+  }
+
+  .horario-grid tbody td .text-center.py-4 {
+    padding-bottom: 0.75rem !important;
+    padding-top: 0.75rem !important;
+  }
+
+  .horario-detail {
+    padding: 0.75rem !important;
+  }
+
+  .horario-detail > .d-flex {
+    align-items: flex-start !important;
+    flex-direction: column;
+  }
+
+  .horario-detail > .d-flex .btn {
+    width: 100%;
+  }
+
+  .horario-detail .table-responsive {
+    overflow: visible;
+  }
+
+  .horario-detail table,
+  .horario-detail tbody,
+  .horario-detail tr,
+  .horario-detail td {
+    display: block;
+    width: 100%;
+  }
+
+  .horario-detail thead {
+    display: none;
+  }
+
+  .horario-detail tbody tr {
+    background: #f8faff;
+    border: 1px solid #e1e7f2;
+    border-left: 4px solid #2f63f5;
+    border-radius: 0.65rem;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+    margin-bottom: 0.75rem;
+    padding: 0.7rem 0.85rem;
+  }
+
+  .horario-detail tbody tr:last-child {
+    margin-bottom: 0;
+  }
+
+  .horario-detail tbody td {
+    align-items: flex-start;
+    border: 0;
+    display: block;
+    min-height: 0;
+    padding: 0.65rem 0;
+    text-align: left;
+  }
+
+  .horario-detail tbody td::before {
+    color: #64748b;
+    content: attr(data-label);
+    display: block;
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-align: left;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+  }
+
+  .horario-detail tbody td strong,
+  .horario-detail tbody td > span {
+    display: inline-block;
+    max-width: 100%;
+    text-align: left;
+    overflow-wrap: anywhere;
+  }
+
+  .horario-detail tbody td:not(:last-child) {
+    border-bottom: 1px solid #e8edf5;
+  }
+
+  .horario-detail tbody td[colspan] {
+    display: block;
+    text-align: center;
+  }
+
+  .horario-detail tbody td[colspan]::before {
+    display: none;
+  }
 }
 
 /* ESTILOS DE IMPRESIÓN Y EXPORTACIÓN A PDF */
